@@ -1,4 +1,4 @@
-# Título
+# Estrutura de Votação Simples
 
 ## Autores
 
@@ -11,17 +11,35 @@
 
 ## Descrição
 
-O *building block* contido neste repositório tem por objetivo <descrever objetivo>.
+O *building block* contido neste repositório tem por objetivo a implementação de uma Estrutura de Votação Simples, onde é proposto que o agente mediador escolha um valor numérico inteiro dado um intervalo pré-definido e que os agentes votantes busquem, dentro deste intervalo, escolher um número. O agente votante cuja escolha numérica mais se aproximar do valor definido pelo mediador é estabelecido como o vencedor. Há também a possibilidade de empate.
 
-### Projeto em Execução
+<!-- ### Projeto em Execução
 
 <img src="" alt="Descrição do Print">
 
-*Figura 1: Print do Projeto em Execução*
+*Figura 1: Print do Projeto em Execução* -->
 
 ## Requisitos Técnicos
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas in bibendum diam. Vestibulum at sapien sit amet erat malesuada ultrices. Quisque faucibus purus dui. Sed egestas fringilla hendrerit. Nullam rutrum consectetur risus, dapibus tincidunt lorem pellentesque nec. Donec leo eros, euismod a gravida eu, faucibus eget leo. Quisque auctor, enim at hendrerit auctor, dui nulla dictum tortor, a convallis mauris ligula ut quam. Pellentesque dapibus enim libero, ut tristique dolor porta quis. Morbi eget sagittis nunc. Maecenas eget metus bibendum nulla feugiat vulputate. Vestibulum non accumsan eros, vel finibus arcu. Nunc vel convallis mauris.
+1. **Criação de votação:** mediante solicitação de um agente votante, é esperado que
+o agente mediador seja capaz de criar uma votação com um código de identificação
+único no contexto de execução e um intervalo de valores numéricos definido;
+2. **Compartilhamento de votação:** mediante recebimento do código de votação do
+mediador, é esperado que o agente votante que solicitou a votação compartilhe esse
+código com os outros agentes votantes, os quais devem se registrar no DF com o
+devido código para a efetiva participação na votação;
+3. **Solicitação dos votos:** após a visualização no DF dos agentes participantes da
+votação estabelecida, o agente mediador deve solicitar aos mesmos seus votos;
+Fornecimento dos votos: os agentes votantes devem, mediante requisição do
+agente, enviar seus votos ao agente mediador, os quais devem ser compostos por
+um número dentro do intervalo proposto;
+5. **Contabilização do resultado:** após o recebimento dos votos de todos os agentes
+votantes, o agente mediador deve ser capaz de avaliar os votos recebidos e determinar
+o vencedor da votação ou o empate da mesma;
+6. **Informação do resultado:** após a contabilização do resultado, o agente mediador
+deve informar a todos os agentes votantes participantes o resultado da votação;
+7. **Deleção da votação:** após a realização da votação, o agente mediador se respon-
+sabilizará por remover do DF os nomes dos agentes votantes da votação realizada.
 
 ## Requisitos para Execução
 
@@ -34,13 +52,13 @@ Para a execução do *building block*, é possível utilizar-se do *Makefile* ad
 - Primeiramente, clone o repositório em sua máquina:
 
 ```bash
-git clone https://github.com/SMA-building-blocks/{PREENCHER}.git
+git clone https://github.com/SMA-building-blocks/simple-voting-structure.git
 ```
 
 - Em seguida, vá para a pasta do repositório:
 
 ```bash
-cd {PREENCHER}
+cd simple-voting-structure
 ```
 
 - Para realizar a *build* do projeto e executá-lo em seguida, execute o seguinte comando:
@@ -69,6 +87,7 @@ make run
 make clean
 ```
 
-## Referências
+## Fontes e Referências
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas in bibendum diam. Vestibulum at sapien sit amet erat malesuada ultrices. Quisque faucibus purus dui. Sed egestas fringilla hendrerit. Nullam rutrum consectetur risus, dapibus tincidunt lorem pellentesque nec. Donec leo eros, euismod a gravida eu, faucibus eget leo. Quisque auctor, enim at hendrerit auctor, dui nulla dictum tortor, a convallis mauris ligula ut quam. Pellentesque dapibus enim libero, ut tristique dolor porta quis. Morbi eget sagittis nunc. Maecenas eget metus bibendum nulla feugiat vulputate. Vestibulum non accumsan eros, vel finibus arcu. Nunc vel convallis mauris.
+[*Jade Project*](https://jade-project.gitlab.io/). <br />
+[*Maven*](https://maven.apache.org/).
