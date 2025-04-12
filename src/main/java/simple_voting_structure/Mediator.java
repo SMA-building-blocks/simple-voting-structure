@@ -1,10 +1,9 @@
 package simple_voting_structure;
 
+import java.util.ArrayList;
+
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.domain.DFService;
-import jade.domain.FIPAException;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.wrapper.AgentContainer;
@@ -21,7 +20,6 @@ public class Mediator extends BaseAgent {
 
 	private AgentController p1 = null;
 	private AgentController p2 = null;
-	private AID initiator = null;
 
 	@Override
 	protected void setup() {
@@ -29,54 +27,33 @@ public class Mediator extends BaseAgent {
 		System.out.println("I'm the mediator!");
 
 		Object[] args = getArguments();
+		ArrayList<String> votersName = new ArrayList<String>();
+		
 		if (args != null && args.length > 0) {
-			initiator = new AID((String) args[0], AID.ISLOCALNAME);
+			for (Object voter : args) {
+				votersName.add(voter.toString());
+			}
 		}
-
-		try {
-			DFAgentDescription dfd = new DFAgentDescription();
-			dfd.setName(getAID());
-			DFService.register(this, dfd);
-			System.out.println(getLocalName() + " REGISTERED WITH THE DF");
-		} catch (FIPAException e) {
-			e.printStackTrace();
-		}
-
-		// create another two ThanksAgent
-		String p1AgentName = "voter_1";
-		String p2AgentName = "voter_2";
-
-		try {
-			// create agents t1 and t2 on the same container of the creator agent
-			AgentContainer container = (AgentContainer) getContainerController(); // get a container controller for creating
-																																						// new agents
-			p1 = container.createNewAgent(p1AgentName, "simple_voting_structure.Voter", null);
-			p1.start();
-			p2 = container.createNewAgent(p2AgentName, "simple_voting_structure.Voter", null);
-			p2.start();
-			System.out.println(getLocalName() + " CREATED AND STARTED NEW VOTERS: " + p1AgentName + " AND " + p2AgentName
-					+ " ON CONTAINER " + container.getContainerName());
-		} catch (Exception any) {
-			any.printStackTrace();
-		}
+		
+		this.registerDF(this, "Mediator", "mediator");
 
 		addBehaviour(new CyclicBehaviour(this) {
 			public void action() {
 				// listen if a greetings message arrives
 				ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.INFORM));
 				if (msg != null) {
-					if (MessageTypes.ANSWER.name().equalsIgnoreCase(msg.getContent().split(" ")[0])) {
+					if (Mediator.ANSWER.equalsIgnoreCase(msg.getContent().split(" ")[0])) {
 						// if an ANSWER to a greetings message is arrived
 						// then send a THANKS message
 						System.out
 								.println(myAgent.getLocalName() + " RECEIVED ANSWER MESSAGE FROM " + msg.getSender().getLocalName());
 						// System.out.println(myAgent.getLocalName()+" " + msg.getContent());
 						ACLMessage replyT = msg.createReply();
-						replyT.setContent(MessageTypes.THANKS.name());
+						replyT.setContent(Mediator.THANKS);
 						myAgent.send(replyT);
 						System.out.println(myAgent.getLocalName() + " SENT THANKS MESSAGE");
 
-						if (msg.getSender().getLocalName().equals(p1AgentName)) {
+						if (msg.getSender().getLocalName().equals(votersName.get(0))) {
 							inpA = Integer.parseInt(msg.getContent().split(" ")[1]);
 						} else {
 							inpB = Integer.parseInt(msg.getContent().split(" ")[1]);
@@ -86,24 +63,24 @@ public class Mediator extends BaseAgent {
 						if (answersCnt == 2) {
 							ACLMessage replyW = new ACLMessage(ACLMessage.INFORM);
 
-							replyW.setContent((((inpA + inpB) % 2 != 0) ? MessageTypes.ODD.name() + " " + p1AgentName
-									: MessageTypes.EVEN.name() + " " + p2AgentName) + " WINNER!");
-							replyW.addReceiver(new AID(p1AgentName, AID.ISLOCALNAME));
-							replyW.addReceiver(new AID(p2AgentName, AID.ISLOCALNAME));
+							replyW.setContent((((inpA + inpB) % 2 != 0) ? Mediator.ODD + " " + votersName.get(0)
+									: Mediator.EVEN + " " + votersName.get(1)) + " WINNER!");
+							replyW.addReceiver(new AID(votersName.get(0), AID.ISLOCALNAME));
+							replyW.addReceiver(new AID(votersName.get(1), AID.ISLOCALNAME));
 							myAgent.send(replyW);
 
 							System.out.println(myAgent.getLocalName() + " SENT WINNER MESSAGE");
 						}
-					} else if (MessageTypes.START.name().equalsIgnoreCase(msg.getContent())) {
+					} else if (Mediator.START.equalsIgnoreCase(msg.getContent())) {
 						// send them a message requesting for a number;
 						ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
-						msg2.setContent(MessageTypes.REQUEST.name());
+						msg2.setContent(Mediator.REQUEST);
 
-						msg2.addReceiver(new AID(p1AgentName, AID.ISLOCALNAME));
-						msg2.addReceiver(new AID(p2AgentName, AID.ISLOCALNAME));
+						msg2.addReceiver(new AID(votersName.get(0), AID.ISLOCALNAME));
+						msg2.addReceiver(new AID(votersName.get(1), AID.ISLOCALNAME));
 
 						send(msg2);
-						System.out.println(getLocalName() + " SENT REQUEST MESSAGE  TO " + p1AgentName + " AND " + p2AgentName);
+						System.out.println(getLocalName() + " SENT REQUEST MESSAGE  TO " + votersName.get(0) + " AND " + votersName.get(1));
 					} else {
 						System.out.println(
 								myAgent.getLocalName() + " Unexpected message received from " + msg.getSender().getLocalName());

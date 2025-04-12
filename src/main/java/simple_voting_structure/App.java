@@ -9,6 +9,7 @@ import jade.wrapper.AgentContainer;
 import jade.lang.acl.ACLMessage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Class that set the main agent and it's actions
@@ -27,16 +28,42 @@ public class App extends BaseAgent {
 		
 		System.out.println("Starting Agents...");
 		
-		String m1AgentName = "Mediator";
-		launchAgent(m1AgentName, "simple_voting_structure.Mediator", null);
-		System.out.println("Agents started...");
+		System.out.println("Creating voters...");
+		ArrayList<String> votersName = new ArrayList<String>();
 		
+		Object[] args = getArguments();
+		int votersQuorum = 0;
+		if (args != null && args.length > 0) {
+			votersQuorum =  Integer.parseInt(args[0].toString());
+		}
+		
+		for ( int i = 0; i < votersQuorum; ++i ) votersName.add("voter_" + i);
+
+		try {
+			// create agents on the same container of the creator agent
+			AgentContainer container = (AgentContainer) getContainerController(); // get a container controller for creating
+			
+			votersName.forEach(voter -> {
+				this.launchAgent(voter, "simple_voting_structure.Voter", null);
+				
+				System.out.println(getLocalName() + " CREATED AND STARTED NEW VOTER: " + voter + " ON CONTAINER " + container.getName());
+			});
+		} catch (Exception any) {
+			any.printStackTrace();
+		}
+		
+		String m1AgentName = "Mediator";
+		launchAgent(m1AgentName, "simple_voting_structure.Mediator", votersName.toArray());
+		
+		System.out.println("Agents started...");
 		pauseSystem();
 		
 		// send them a message demanding start;
 		System.out.println("Starting system!");		
-		sendMessage(m1AgentName, ACLMessage.INFORM, MessageTypes.START.name());
+		sendMessage(m1AgentName, ACLMessage.INFORM, App.START);
 	}
+
+	
 
 	private void pauseSystem() {
 		try {

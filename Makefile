@@ -1,6 +1,6 @@
 PATH_PROJECT_JAR = target/simple_voting_structure-0.0.1-SNAPSHOT.jar
 PROJECT_GROUP    = simple_voting_structure
-JADE_AGENTS      = simple_voting_structure:$(PROJECT_GROUP).App;
+JADE_AGENTS      = simple_voting_structure:$(PROJECT_GROUP).App(2);
 JADE_FLAGS 		 = -gui -agents "$(JADE_AGENTS)"
 
 .PHONY:

@@ -12,20 +12,13 @@ import jade.lang.acl.ACLMessage;
 public abstract class BaseAgent extends Agent {
 	
 	private static final long serialVersionUID = 1L;
-
-	public enum MessageTypes {
-		ODD("ODD"), EVEN("EVEN"), REQUEST("REQUEST"), ANSWER("ANSWER"), THANKS("THANKS"), START("START");
-		
-		private final String selMsgType;
-		
-		MessageTypes(String selected) {
-			selMsgType = selected;
-		}
-		
-		public String getMessageType() {
-			return selMsgType;
-		}
-	};
+	
+	public static final String ODD = "ODD";
+	public static final String EVEN = "EVEN";
+	public static final String REQUEST = "REQUEST";
+	public static final String ANSWER = "ANSWER";
+	public static final String THANKS = "THANKS";
+	public static final String START = "START";
 	
 	@Override
 	protected void setup() {}
