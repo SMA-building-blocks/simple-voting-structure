@@ -1,6 +1,7 @@
+QUORUM ?= 2
 PATH_PROJECT_JAR = target/simple_voting_structure-0.0.1-SNAPSHOT.jar
 PROJECT_GROUP    = simple_voting_structure
-JADE_AGENTS      = simple_voting_structure:$(PROJECT_GROUP).App(2);
+JADE_AGENTS      = simple_voting_structure:$(PROJECT_GROUP).App($(QUORUM));
 JADE_FLAGS 		 = -gui -agents "$(JADE_AGENTS)"
 
 .PHONY:
@@ -23,3 +24,7 @@ clean:
 	@echo "Removendo a build do projeto"
 	mvn clean
 	rm -f APDescription.txt; rm -f MTPs-Main-Container.txt
+
+help:
+	@echo "Para mudar a quantidade de agentes votantes utilize o seguinte comando:"
+	@echo "make build-and-run QUORUM=<QUANTIDADE DE VOTANTES>"
