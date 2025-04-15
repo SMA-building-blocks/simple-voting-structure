@@ -58,6 +58,23 @@ public abstract class BaseAgent extends Agent {
 		send(msg);
 	}
 	
+	protected DFAgentDescription[] searchAgentByType (String type) {
+		DFAgentDescription search = new DFAgentDescription();
+		ServiceDescription sd = new ServiceDescription();
+		DFAgentDescription [] foundAgents = null;
+		
+		sd.setType(type);
+		search.addServices(sd);
+		
+		try {
+			foundAgents = DFService.search(this, search);
+		} catch ( Exception any ) {
+			any.printStackTrace();
+		}
+		
+		return foundAgents;
+	}
+	
 	protected void takeDown() {
 		// Deregister with the DF
 		try {

@@ -38,14 +38,9 @@ public class Voter extends BaseAgent {
 						ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
 						msg2.setContent(Voter.START);
 						
-						DFAgentDescription search = new DFAgentDescription();
-						ServiceDescription sd = new ServiceDescription();
+						DFAgentDescription [] foundAgents = searchAgentByType("mediator");
 						
-						sd.setName("Mediator");
-						search.addServices(sd);
 						try {
-							DFAgentDescription [] foundAgents = DFService.search(myAgent, search);
-							
 							AID foundMediator = null;
 							if ( foundAgents.length > 0 ) {
 								foundMediator = foundAgents[0].getName();
