@@ -9,22 +9,34 @@ JADE_FLAGS 		 = -gui -agents "$(JADE_AGENTS)"
 	build-and-run
 
 build-and-run:
-	@echo "Gerando a build e executando o projeto"
+	@echo "Building and executing the project..."
 	make build run
 
 build:
-	@echo "Gerando a build do projeto"
+	@echo "Building the project"
 	mvn clean install
 
 run:
-	@echo "Executando o projeto com a última build criada"
+	@echo "Executing the project with the last build"
 	java -cp $(PATH_PROJECT_JAR) jade.Boot $(JADE_FLAGS)
 
 clean:
-	@echo "Removendo a build do projeto"
+	@echo "Removing the existing build and auto-generated files"
 	mvn clean
 	rm -f APDescription.txt; rm -f MTPs-Main-Container.txt
 
 help:
-	@echo "Para mudar a quantidade de agentes votantes utilize o seguinte comando:"
-	@echo "make build-and-run QUORUM=<QUANTIDADE DE VOTANTES>"
+	@echo "This program has the following commands to execute:"
+	@echo "	$$ make build "
+	@echo "	  It's responsible for Building the Jar of this Building Block"
+	@echo "	$$ make run"
+	@echo "	  It's responsible for executing the program with graphic interface of JADE"
+	@echo "	$$ make clean"
+	@echo "	  It's responsible for cleaning the generated files"
+	@echo "	$$ make build-and-run"
+	@echo "	  Executes both commands build and run in this order"
+	@echo "	$$ make help"
+	@echo "	  Shows this help resume"
+	@echo ""
+	@echo "If wanted it's possible to change the quantity of the voting agents by adding the variable QUORUM to the command, as seen in the next line"
+	@echo "	$$ make build-and-run QUORUM=<Quantity of voters>"
