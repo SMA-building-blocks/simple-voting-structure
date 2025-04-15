@@ -20,6 +20,16 @@ public abstract class BaseAgent extends Agent {
 	public static final String THANKS = "THANKS";
 	public static final String START = "START";
 	
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_BLUE = "\u001B[34m";
+	public static final String ANSI_BLACK = "\u001B[30m";
+	public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_YELLOW = "\033[1;93m";
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	public static final String ANSI_CYAN = "\u001B[36m";
+	public static final String ANSI_WHITE = "\u001B[37m";
+	
 	@Override
 	protected void setup() {}
 	
@@ -46,6 +56,23 @@ public abstract class BaseAgent extends Agent {
 		msg.setContent(content);
 		msg.addReceiver(new AID(agentName, AID.ISLOCALNAME));
 		send(msg);
+	}
+	
+	protected DFAgentDescription[] searchAgentByType (String type) {
+		DFAgentDescription search = new DFAgentDescription();
+		ServiceDescription sd = new ServiceDescription();
+		DFAgentDescription [] foundAgents = null;
+		
+		sd.setType(type);
+		search.addServices(sd);
+		
+		try {
+			foundAgents = DFService.search(this, search);
+		} catch ( Exception any ) {
+			any.printStackTrace();
+		}
+		
+		return foundAgents;
 	}
 	
 	protected void takeDown() {

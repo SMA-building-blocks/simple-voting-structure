@@ -1,6 +1,10 @@
 package simple_voting_structure;
 
+import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -30,6 +34,25 @@ public class Voter extends BaseAgent {
 						reply.setContent(Voter.ANSWER + " " + (Min + (int) (Math.random() * ((Max - Min) + 1))));
 						myAgent.send(reply);
 						System.out.println(myAgent.getLocalName() + " SENT ANSWER MESSAGE");
+					} else if (Voter.START.equalsIgnoreCase(msg.getContent())) {
+						ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
+						msg2.setContent(Voter.START);
+						
+						DFAgentDescription [] foundAgents = searchAgentByType("mediator");
+						
+						try {
+							AID foundMediator = null;
+							if ( foundAgents.length > 0 ) {
+								foundMediator = foundAgents[0].getName();
+								
+								msg2.addReceiver(foundMediator);
+								
+								send(msg2);
+								System.out.println(getLocalName() + " SENT START MESSAGE  TO " + foundMediator);
+							}
+						} catch ( Exception any ) {
+							any.printStackTrace();
+						}
 					} else if (Voter.THANKS.equalsIgnoreCase(msg.getContent())) {
 						System.out
 								.println(myAgent.getLocalName() + " RECEIVED THANKS MESSAGE FROM " + msg.getSender().getLocalName());

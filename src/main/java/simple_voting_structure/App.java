@@ -3,13 +3,14 @@
  */
 package simple_voting_structure;
 
-import jade.core.AID;
 import jade.wrapper.AgentController;
 import jade.wrapper.AgentContainer;
 import jade.lang.acl.ACLMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+
 
 /**
  * Class that set the main agent and it's actions
@@ -37,6 +38,10 @@ public class App extends BaseAgent {
 			votersQuorum =  Integer.parseInt(args[0].toString());
 		}
 		
+		int votingStarter = (int) (Math.random() * votersQuorum);
+		
+		System.out.println("Agent number " + votingStarter + " will request to the mediator!");
+				
 		for ( int i = 0; i < votersQuorum; ++i ) votersName.add("voter_" + i);
 
 		try {
@@ -44,8 +49,8 @@ public class App extends BaseAgent {
 			AgentContainer container = (AgentContainer) getContainerController(); // get a container controller for creating
 			
 			votersName.forEach(voter -> {
-				this.launchAgent(voter, "simple_voting_structure.Voter", null);
-				
+				this.launchAgent(voter, "simple_voting_structure.Voter", null);	
+			
 				System.out.println(getLocalName() + " CREATED AND STARTED NEW VOTER: " + voter + " ON CONTAINER " + container.getName());
 			});
 		} catch (Exception any) {
@@ -60,15 +65,15 @@ public class App extends BaseAgent {
 		
 		// send them a message demanding start;
 		System.out.println("Starting system!");		
-		sendMessage(m1AgentName, ACLMessage.INFORM, App.START);
+		sendMessage(votersName.get(votingStarter), ACLMessage.INFORM, App.START);
 	}
 
 	
 
 	private void pauseSystem() {
 		try {
-            System.out.println("The system is paused -- this action is only here to let you activate the sniffer on the agents, if you want (see documentation)");
-            System.out.println("Press enter in the console to start the agents");
+            System.out.println(App.ANSI_YELLOW + "The system is paused -- this action is only here to let you activate the sniffer on the agents, if you want (see documentation)" + App.ANSI_RESET);
+            System.out.println(App.ANSI_YELLOW + "Press enter in the console to start the agents" + App.ANSI_RESET);
             System.in.read();
         } catch (IOException e) {
             e.printStackTrace();
