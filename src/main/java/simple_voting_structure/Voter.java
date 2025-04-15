@@ -1,10 +1,10 @@
 package simple_voting_structure;
 
+import java.util.logging.Level;
+
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -14,7 +14,7 @@ public class Voter extends BaseAgent {
 
 	@Override
 	protected void setup() {
-		System.out.println("I'm voter: " + this.getLocalName() + "!");
+		logger.log(Level.INFO, "I'm voter: " + this.getLocalName() + "!");
 		
 		this.registerDF(this, "Voter", "voter");
 
@@ -28,12 +28,11 @@ public class Voter extends BaseAgent {
 						final int Min = 1;
 
 						// if a greetings message is arrived then send an ANSWER
-						System.out
-								.println(myAgent.getLocalName() + " RECEIVED REQUEST MESSAGE FROM " + msg.getSender().getLocalName());
+						logger.log(Level.INFO, myAgent.getLocalName() + " RECEIVED REQUEST MESSAGE FROM " + msg.getSender().getLocalName());
 						ACLMessage reply = msg.createReply();
 						reply.setContent(Voter.ANSWER + " " + (Min + (int) (Math.random() * ((Max - Min) + 1))));
 						myAgent.send(reply);
-						System.out.println(myAgent.getLocalName() + " SENT ANSWER MESSAGE");
+						logger.log(Level.INFO, myAgent.getLocalName() + " SENT ANSWER MESSAGE");
 					} else if (Voter.START.equalsIgnoreCase(msg.getContent())) {
 						ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
 						msg2.setContent(Voter.START);
@@ -48,21 +47,20 @@ public class Voter extends BaseAgent {
 								msg2.addReceiver(foundMediator);
 								
 								send(msg2);
-								System.out.println(getLocalName() + " SENT START MESSAGE  TO " + foundMediator);
+								logger.log(Level.INFO, getLocalName() + " SENT START MESSAGE  TO " + foundMediator);
 							}
 						} catch ( Exception any ) {
+							logger.log(Level.SEVERE, App.ANSI_RED + "ERROR WHILE SENDING MESSAGE" + App.ANSI_RESET);
 							any.printStackTrace();
 						}
 					} else if (Voter.THANKS.equalsIgnoreCase(msg.getContent())) {
-						System.out
-								.println(myAgent.getLocalName() + " RECEIVED THANKS MESSAGE FROM " + msg.getSender().getLocalName());
+						logger.log(Level.INFO, myAgent.getLocalName() + " RECEIVED THANKS MESSAGE FROM " + msg.getSender().getLocalName());
 					} else if (Voter.ODD.equalsIgnoreCase(msg.getContent().split(" ")[0])
 							|| Voter.EVEN.equalsIgnoreCase(msg.getContent().split(" ")[0])) {
-						System.out
-								.println(myAgent.getLocalName() + " RECEIVED RESULTS MESSAGE FROM " + msg.getSender().getLocalName());
-						System.out.println(myAgent.getLocalName() + " " + msg.getContent());
+						logger.log(Level.INFO, myAgent.getLocalName() + " RECEIVED RESULTS MESSAGE FROM " + msg.getSender().getLocalName());
+						logger.log(Level.INFO, myAgent.getLocalName() + " " + msg.getContent());
 					} else {
-						System.out.println(
+						logger.log(Level.INFO, 
 								myAgent.getLocalName() + " Unexpected message received from " + msg.getSender().getLocalName());
 					}
 				} else {
