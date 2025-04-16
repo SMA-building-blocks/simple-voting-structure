@@ -4,10 +4,12 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
-// import jade.wrapper.StaleProxyException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import java.util.logging.Logger;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
 
 public abstract class BaseAgent extends Agent {
 	
@@ -30,6 +32,8 @@ public abstract class BaseAgent extends Agent {
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_WHITE = "\u001B[37m";
 	
+	protected static final Logger logger = Logger.getLogger(BaseAgent.class.getName());
+	
 	@Override
 	protected void setup() {}
 	
@@ -45,7 +49,7 @@ public abstract class BaseAgent extends Agent {
 			dfd.addServices(sd);
 			
 			DFService.register(regAgent, dfd);
-			System.out.println(getLocalName()+" REGISTERED WITH THE DF");
+			logger.log(Level.INFO, getLocalName()+" REGISTERED WITH THE DF" );
 		} catch (FIPAException e) {
 			e.printStackTrace();
 		}
@@ -79,13 +83,19 @@ public abstract class BaseAgent extends Agent {
 		// Deregister with the DF
 		try {
 			DFService.deregister(this);
-			System.out.println(getLocalName()+" DEREGISTERED WITH THE DF");
+			logger.log(Level.INFO,getLocalName()+" DEREGISTERED WITH THE DF" );
+
 		} catch (FIPAException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	
+	protected void loggerSetup() {
+		ConsoleHandler handler = new ConsoleHandler();
+		handler.setFormatter(new Formatter());
+		logger.setUseParentHandlers(false);
+		logger.addHandler(handler);
+	}
 	
 
 }
