@@ -23,19 +23,19 @@ public class Voter extends BaseAgent {
 				// listen if a greetings message arrives
 				ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.INFORM));
 				if (msg != null) {
-					if (Voter.REQUEST.equalsIgnoreCase(msg.getContent())) {
+					if (REQUEST.equalsIgnoreCase(msg.getContent())) {
 						final int Max = 10;
 						final int Min = 1;
 
 						// if a greetings message is arrived then send an ANSWER
 						logger.log(Level.INFO, myAgent.getLocalName() + " RECEIVED REQUEST MESSAGE FROM " + msg.getSender().getLocalName());
 						ACLMessage reply = msg.createReply();
-						reply.setContent(Voter.ANSWER + " " + (Min + (int) (Math.random() * ((Max - Min) + 1))));
+						reply.setContent(ANSWER + " " + (Min + (int) (Math.random() * ((Max - Min) + 1))));
 						myAgent.send(reply);
 						logger.log(Level.INFO, myAgent.getLocalName() + " SENT ANSWER MESSAGE");
-					} else if (Voter.START.equalsIgnoreCase(msg.getContent())) {
+					} else if (START.equalsIgnoreCase(msg.getContent())) {
 						ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
-						msg2.setContent(Voter.START);
+						msg2.setContent(START);
 						
 						DFAgentDescription [] foundAgents = searchAgentByType("mediator");
 						
@@ -47,16 +47,16 @@ public class Voter extends BaseAgent {
 								msg2.addReceiver(foundMediator);
 								
 								send(msg2);
-								logger.log(Level.INFO, getLocalName() + " SENT START MESSAGE  TO " + foundMediator);
+								logger.log(Level.INFO, getLocalName() + " SENT START MESSAGE  TO " + foundMediator.getLocalName());
 							}
 						} catch ( Exception any ) {
-							logger.log(Level.SEVERE, App.ANSI_RED + "ERROR WHILE SENDING MESSAGE" + App.ANSI_RESET);
+							logger.log(Level.SEVERE, ANSI_RED + "ERROR WHILE SENDING MESSAGE" + ANSI_RESET);
 							any.printStackTrace();
 						}
-					} else if (Voter.THANKS.equalsIgnoreCase(msg.getContent())) {
+					} else if (THANKS.equalsIgnoreCase(msg.getContent())) {
 						logger.log(Level.INFO, myAgent.getLocalName() + " RECEIVED THANKS MESSAGE FROM " + msg.getSender().getLocalName());
-					} else if (Voter.ODD.equalsIgnoreCase(msg.getContent().split(" ")[0])
-							|| Voter.EVEN.equalsIgnoreCase(msg.getContent().split(" ")[0])) {
+					} else if (ODD.equalsIgnoreCase(msg.getContent().split(" ")[0])
+							|| EVEN.equalsIgnoreCase(msg.getContent().split(" ")[0])) {
 						logger.log(Level.INFO, myAgent.getLocalName() + " RECEIVED RESULTS MESSAGE FROM " + msg.getSender().getLocalName());
 						logger.log(Level.INFO, myAgent.getLocalName() + " " + msg.getContent());
 					} else {

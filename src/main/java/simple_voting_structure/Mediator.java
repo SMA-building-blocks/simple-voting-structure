@@ -7,8 +7,6 @@ import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.wrapper.AgentController;
-// import jade.wrapper.StaleProxyException;
 
 public class Mediator extends BaseAgent {
 
@@ -17,9 +15,6 @@ public class Mediator extends BaseAgent {
 	private int answersCnt = 0;
 
 	private int inpA, inpB;
-
-	private AgentController p1 = null;
-	private AgentController p2 = null;
 
 	@Override
 	protected void setup() {
@@ -42,12 +37,12 @@ public class Mediator extends BaseAgent {
 				// listen if a greetings message arrives
 				ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.INFORM));
 				if (msg != null) {
-					if (Mediator.ANSWER.equalsIgnoreCase(msg.getContent().split(" ")[0])) {
+					if (ANSWER.equalsIgnoreCase(msg.getContent().split(" ")[0])) {
 						// if an ANSWER to a greetings message is arrived
 						// then send a THANKS message
 						logger.log(Level.INFO, myAgent.getLocalName() + " RECEIVED ANSWER MESSAGE FROM " + msg.getSender().getLocalName());
 						ACLMessage replyT = msg.createReply();
-						replyT.setContent(Mediator.THANKS);
+						replyT.setContent(THANKS);
 						myAgent.send(replyT);
 						logger.log(Level.INFO, myAgent.getLocalName() + " SENT THANKS MESSAGE");
 
@@ -61,18 +56,18 @@ public class Mediator extends BaseAgent {
 						if (answersCnt == 2) {
 							ACLMessage replyW = new ACLMessage(ACLMessage.INFORM);
 
-							replyW.setContent((((inpA + inpB) % 2 != 0) ? Mediator.ODD + " " + votersName.get(0)
-									: Mediator.EVEN + " " + votersName.get(1)) + " WINNER!");
+							replyW.setContent((((inpA + inpB) % 2 != 0) ? ODD + " " + votersName.get(0)
+									: EVEN + " " + votersName.get(1)) + " WINNER!");
 							replyW.addReceiver(new AID(votersName.get(0), AID.ISLOCALNAME));
 							replyW.addReceiver(new AID(votersName.get(1), AID.ISLOCALNAME));
 							myAgent.send(replyW);
 
 							logger.log(Level.INFO, myAgent.getLocalName() + " SENT WINNER MESSAGE");
 						}
-					} else if (Mediator.START.equalsIgnoreCase(msg.getContent())) {
+					} else if (START.equalsIgnoreCase(msg.getContent())) {
 						// send them a message requesting for a number;
 						ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
-						msg2.setContent(Mediator.REQUEST);
+						msg2.setContent(REQUEST);
 
 						msg2.addReceiver(new AID(votersName.get(0), AID.ISLOCALNAME));
 						msg2.addReceiver(new AID(votersName.get(1), AID.ISLOCALNAME));

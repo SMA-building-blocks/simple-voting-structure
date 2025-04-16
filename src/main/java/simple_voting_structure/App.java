@@ -10,7 +10,7 @@ import jade.lang.acl.ACLMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
-
+import java.util.Random;
 
 
 /**
@@ -31,7 +31,7 @@ public class App extends BaseAgent {
 		
 		logger.log(Level.INFO, "Creating voters...");
 
-		ArrayList<String> votersName = new ArrayList<String>();
+		ArrayList<String> votersName = new ArrayList<>();
 		
 		Object[] args = getArguments();
 		int votersQuorum = 0;
@@ -39,7 +39,9 @@ public class App extends BaseAgent {
 			votersQuorum =  Integer.parseInt(args[0].toString());
 		}
 		
-		int votingStarter = (int) (Math.random() * votersQuorum);
+		Random rand = new Random();
+
+		int votingStarter = rand.nextInt(votersQuorum);
 		
 		logger.log(Level.INFO, "Agent number " + votingStarter + " will request to the mediator!");
 				
@@ -47,14 +49,14 @@ public class App extends BaseAgent {
 
 		try {
 			// create agents on the same container of the creator agent
-			AgentContainer container = (AgentContainer) getContainerController(); // get a container controller for creating
+			AgentContainer container = getContainerController(); // get a container controller for creating
 			
 			votersName.forEach(voter -> {
 				this.launchAgent(voter, "simple_voting_structure.Voter", null);	
 				logger.log(Level.INFO, getLocalName() + " CREATED AND STARTED NEW VOTER: " + voter + " ON CONTAINER " + container.getName());
 			});
 		} catch (Exception any) {
-			logger.log(Level.SEVERE, App.ANSI_RED + "ERROR WHILE CREATING AGENTS" + App.ANSI_RESET);
+			logger.log(Level.SEVERE, ANSI_RED + "ERROR WHILE CREATING AGENTS" + ANSI_RESET);
 			any.printStackTrace();
 		}
 		
@@ -67,28 +69,29 @@ public class App extends BaseAgent {
 		// send them a message demanding start;
 		logger.log(Level.INFO, "Starting system!");
 
-		sendMessage(votersName.get(votingStarter), ACLMessage.INFORM, App.START);
+		sendMessage(votersName.get(votingStarter), ACLMessage.INFORM, START);
+		logger.log(Level.INFO, getLocalName() + " SENT START MESSAGE  TO " + votersName.get(votingStarter));
 	}
 	
 
 	private void pauseSystem() {
 		try {
-			logger.log(Level.WARNING, App.ANSI_YELLOW + "The system is paused -- this action is here only to let you activate the sniffer on the agents, if you want (see documentation)" + App.ANSI_RESET);
-			logger.log(Level.WARNING, App.ANSI_YELLOW + "Press enter in the console to start the agents" + App.ANSI_RESET);
+			logger.log(Level.WARNING, ANSI_YELLOW + "The system is paused -- this action is here only to let you activate the sniffer on the agents, if you want (see documentation)" + ANSI_RESET);
+			logger.log(Level.WARNING, ANSI_YELLOW + "Press enter in the console to start the agents" + ANSI_RESET);
             System.in.read();
         } catch (IOException e) {
-        	logger.log(Level.SEVERE, App.ANSI_RED + "ERROR STARTING THE SYSTEM" + App.ANSI_RESET);
+        	logger.log(Level.SEVERE, ANSI_RED + "ERROR STARTING THE SYSTEM" + ANSI_RESET);
             e.printStackTrace();
         }
 	}
 
 	private void launchAgent(String agentName, String className, Object[] args) {
 		try {
-			AgentContainer container = (AgentContainer)getContainerController(); // get a container controller for creating new agents
+			AgentContainer container = getContainerController(); // get a container controller for creating new agents
 			AgentController newAgent = container.createNewAgent(agentName, className, args);
 			newAgent.start();
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, App.ANSI_RED + "ERROR WHILE LAUNCHING AGENTS" + App.ANSI_RESET);
+			logger.log(Level.SEVERE, ANSI_RED + "ERROR WHILE LAUNCHING AGENTS" + ANSI_RESET);
 			e.printStackTrace();
 		}
 	}
