@@ -5,16 +5,19 @@ import java.util.logging.Level;
 
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 public class Mediator extends BaseAgent {
 
 	private static final long serialVersionUID = 1L;
-
+	private static final int MAX_VOTING_CODE = 9999;
+	private static final int MIN_VOTING_VALUE = 1;
+	private static final int MAX_VOTING_VALUE = 100;
+	
 	private int answersCnt = 0;
-
-	private int inpA, inpB;
+	private int inpA, inpB, voting_code;
 
 	@Override
 	protected void setup() {
@@ -66,6 +69,13 @@ public class Mediator extends BaseAgent {
 						}
 					} else if (START.equalsIgnoreCase(msg.getContent())) {
 						// send them a message requesting for a number;
+						
+						voting_code = votingCodeGenerator();
+						
+						registerDF(myAgent, Integer.toString(voting_code), Integer.toString(voting_code));
+
+						logger.log(Level.INFO, String.format("%s AGENT GENERATED VOTING WITH CODE %d!", getLocalName(), voting_code));
+						
 						ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
 						msg2.setContent(REQUEST);
 
@@ -73,7 +83,7 @@ public class Mediator extends BaseAgent {
 						msg2.addReceiver(new AID(votersName.get(1), AID.ISLOCALNAME));
 
 						send(msg2);
-						logger.log(Level.INFO, getLocalName() + " SENT REQUEST MESSAGE  TO " + votersName.get(0) + " AND " + votersName.get(1));
+						logger.log(Level.INFO, getLocalName() + " SENT REQUEST MESSAGE TO " + votersName.get(0) + " AND " + votersName.get(1));
 					} else {
 						logger.log(Level.INFO, 
 								myAgent.getLocalName() + " Unexpected message received from " + msg.getSender().getLocalName());
@@ -84,5 +94,19 @@ public class Mediator extends BaseAgent {
 				}
 			}
 		});
+	}
+	
+	private int votingCodeGenerator () {
+		int proposedCode;
+		DFAgentDescription [] foundAgents;
+		
+		do {
+			proposedCode = rand.nextInt(MAX_VOTING_CODE);
+			
+			foundAgents = searchAgentByType(Integer.toString(proposedCode));
+			System.out.println(String.format("I have found %d agents!\n", foundAgents.length));
+		} while ( foundAgents.length > 0 );
+
+		return proposedCode;
 	}
 }

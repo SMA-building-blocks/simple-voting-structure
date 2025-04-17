@@ -8,6 +8,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import java.util.logging.Logger;
+import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 
@@ -32,6 +33,9 @@ public abstract class BaseAgent extends Agent {
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_WHITE = "\u001B[37m";
 	
+	protected static final Random rand = new Random();
+
+	
 	protected static final Logger logger = Logger.getLogger(BaseAgent.class.getName());
 	
 	@Override
@@ -42,13 +46,23 @@ public abstract class BaseAgent extends Agent {
 			DFAgentDescription dfd = new DFAgentDescription();
 			dfd.setName(getAID());
 			
+			
 			ServiceDescription sd = new ServiceDescription();
 			sd.setType(sdType);
 			sd.setName(sdName);
 			
+			
+			DFAgentDescription [] found = DFService.search(this, dfd);
+			
 			dfd.addServices(sd);
 			
-			DFService.register(regAgent, dfd);
+			if ( found.length == 0 ) {
+				DFService.register(regAgent, dfd);
+			} else {
+				found[0].addServices(sd);
+				DFService.modify(regAgent, found[0]);
+			}
+				
 			logger.log(Level.INFO, getLocalName()+" REGISTERED WITH THE DF" );
 		} catch (FIPAException e) {
 			e.printStackTrace();
@@ -92,10 +106,8 @@ public abstract class BaseAgent extends Agent {
 	
 	protected void loggerSetup() {
 		ConsoleHandler handler = new ConsoleHandler();
-		handler.setFormatter(new Formatter());
+		handler.setFormatter(new LogFormatter());
 		logger.setUseParentHandlers(false);
 		logger.addHandler(handler);
 	}
-	
-
 }

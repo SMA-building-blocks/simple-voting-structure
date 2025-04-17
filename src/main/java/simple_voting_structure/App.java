@@ -39,8 +39,6 @@ public class App extends BaseAgent {
 			votersQuorum =  Integer.parseInt(args[0].toString());
 		}
 		
-		Random rand = new Random();
-
 		int votingStarter = rand.nextInt(votersQuorum);
 		
 		logger.log(Level.INFO, "Agent number " + votingStarter + " will request to the mediator!");
