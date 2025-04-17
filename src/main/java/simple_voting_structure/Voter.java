@@ -89,9 +89,21 @@ public class Voter extends BaseAgent {
 						
 						send(msg2);
 						logger.log(Level.INFO, String.format("%s SENT INVITE TO VOTERS!", getLocalName()));
+					} else if (msg.getContent().startsWith(INVITE)) {
+						logger.log(Level.INFO, 
+								String.format("RECEIVED VOTING STRUCTURE FROM %s: %s", msg.getSender().getLocalName(), msg.getContent()));		
+						
+						String [] splittedMsg = msg.getContent().split(" ");
+
+						votingCode = Integer.parseInt(splittedMsg[2]);
+						minVotingValue = Integer.parseInt(splittedMsg[4]);
+						maxVotingValue = Integer.parseInt(splittedMsg[6]);
+						
+						registerDF(myAgent, Integer.toString(votingCode), Integer.toString(votingCode));
+						
 					} else {
 						logger.log(Level.INFO, 
-								myAgent.getLocalName() + " Unexpected message received from " + msg.getSender().getLocalName());
+								String.format("%s RECEIVED UNEXPECTED MESSAGE FROM %s", getLocalName(), msg.getSender().getLocalName()));
 					}
 				} else {
 					// if no message is arrived, block the behaviour
