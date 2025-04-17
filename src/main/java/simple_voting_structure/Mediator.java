@@ -21,6 +21,7 @@ public class Mediator extends BaseAgent {
 	private int answersCnt = 0;
 	private int inpA;
 	private int inpB;
+	private int registeredQuorum = 0;
 
 	@Override
 	protected void setup() {
@@ -78,6 +79,8 @@ public class Mediator extends BaseAgent {
 						setAns();
 
 						registerDF(myAgent, Integer.toString(votingCode), Integer.toString(votingCode));
+						
+						registeredQuorum = 0;
 
 						logger.log(Level.INFO, String.format("%s AGENT GENERATED VOTING WITH CODE %d!", getLocalName(), votingCode));
 						

@@ -76,7 +76,10 @@ public class Voter extends BaseAgent {
 						
 						registerDF(myAgent, Integer.toString(votingCode), Integer.toString(votingCode));
 						
-						 ArrayList<DFAgentDescription> foundAgents = new ArrayList<DFAgentDescription>(Arrays.asList(searchAgentByType("voter")));
+						informVotingRegistration();
+						
+						ArrayList<DFAgentDescription> foundAgents = new ArrayList<DFAgentDescription>(
+								Arrays.asList(searchAgentByType("voter")));
 						
 						ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
 						msg2.setContent(String.format("%s %s", INVITE, msg.getContent()));
@@ -89,6 +92,8 @@ public class Voter extends BaseAgent {
 						
 						send(msg2);
 						logger.log(Level.INFO, String.format("%s SENT INVITE TO VOTERS!", getLocalName()));
+						
+						
 					} else if (msg.getContent().startsWith(INVITE)) {
 						logger.log(Level.INFO, 
 								String.format("RECEIVED VOTING STRUCTURE FROM %s: %s", msg.getSender().getLocalName(), msg.getContent()));		
@@ -101,6 +106,7 @@ public class Voter extends BaseAgent {
 						
 						registerDF(myAgent, Integer.toString(votingCode), Integer.toString(votingCode));
 						
+						informVotingRegistration();
 					} else {
 						logger.log(Level.INFO, 
 								String.format("%s RECEIVED UNEXPECTED MESSAGE FROM %s", getLocalName(), msg.getSender().getLocalName()));
@@ -109,6 +115,23 @@ public class Voter extends BaseAgent {
 					// if no message is arrived, block the behaviour
 					block();
 				}
+			}
+
+			private void informVotingRegistration() {
+				ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
+				informMsg.setContent(String.format("%s IN %d", REGISTERED, votingCode));
+				
+				ArrayList<DFAgentDescription> foundVotingParticipants = new ArrayList<>();
+				String [] types = { Integer.toString(votingCode), "mediator" };
+				foundVotingParticipants = new ArrayList<DFAgentDescription>(
+						Arrays.asList(searchAgentByType(types)));
+				
+				foundVotingParticipants.forEach(ag -> {
+					informMsg.addReceiver(ag.getName());
+				});
+				
+				send(informMsg);
+				logger.log(Level.INFO, String.format("%s INFORMED VOTING REGISTRATION TO MEDIATOR!", getLocalName()));
 			}
 		});
 	}

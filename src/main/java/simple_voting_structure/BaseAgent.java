@@ -24,6 +24,7 @@ public abstract class BaseAgent extends Agent {
 	public static final String START = "START";
 	public static final String VOTEID = "VOTEID";
 	public static final String INVITE = "INVITE";
+	public static final String REGISTERED = "REGISTERED";
 	
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLUE = "\u001B[34m";
@@ -86,6 +87,26 @@ public abstract class BaseAgent extends Agent {
 		
 		sd.setType(type);
 		search.addServices(sd);
+		
+		try {
+			foundAgents = DFService.search(this, search);
+		} catch ( Exception any ) {
+			any.printStackTrace();
+		}
+		
+		return foundAgents;
+	}
+	
+	protected DFAgentDescription[] searchAgentByType (String [] type) {
+		DFAgentDescription search = new DFAgentDescription();
+		
+		DFAgentDescription [] foundAgents = null;
+		
+		for ( int i = 0; i < type.length; ++i ) {
+			ServiceDescription sd = new ServiceDescription();
+			sd.setType(type[i]);
+			search.addServices(sd);
+		}
 		
 		try {
 			foundAgents = DFService.search(this, search);
