@@ -3,6 +3,7 @@ package simple_voting_structure;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import FIPA.stringsHelper;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -16,8 +17,11 @@ public class Mediator extends BaseAgent {
 	private static final int MIN_VOTING_VALUE = 1;
 	private static final int MAX_VOTING_VALUE = 100;
 	
+	private int ans;
 	private int answersCnt = 0;
-	private int inpA, inpB, voting_code;
+	private int inpA;
+	private int inpB;
+	private int votingCode;
 
 	@Override
 	protected void setup() {
@@ -70,20 +74,21 @@ public class Mediator extends BaseAgent {
 					} else if (START.equalsIgnoreCase(msg.getContent())) {
 						// send them a message requesting for a number;
 						
-						voting_code = votingCodeGenerator();
+						votingCode = votingCodeGenerator();
 						
-						registerDF(myAgent, Integer.toString(voting_code), Integer.toString(voting_code));
+						setAns();
 
-						logger.log(Level.INFO, String.format("%s AGENT GENERATED VOTING WITH CODE %d!", getLocalName(), voting_code));
+						registerDF(myAgent, Integer.toString(votingCode), Integer.toString(votingCode));
+
+						logger.log(Level.INFO, String.format("%s AGENT GENERATED VOTING WITH CODE %d!", getLocalName(), votingCode));
 						
-						ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
-						msg2.setContent(REQUEST);
+						ACLMessage msg2 = msg.createReply();
 
-						msg2.addReceiver(new AID(votersName.get(0), AID.ISLOCALNAME));
-						msg2.addReceiver(new AID(votersName.get(1), AID.ISLOCALNAME));
+						msg2.setContent("VOTEID " + votingCode + " MAXVALUE " + MAX_VOTING_VALUE + " MINVALUE " + MIN_VOTING_VALUE);
 
 						send(msg2);
-						logger.log(Level.INFO, getLocalName() + " SENT REQUEST MESSAGE TO " + votersName.get(0) + " AND " + votersName.get(1));
+						logger.log(Level.INFO, getLocalName() + " SENT VOTING CODE TO " + msg2.getAllReceiver().next());
+					
 					} else {
 						logger.log(Level.INFO, 
 								myAgent.getLocalName() + " Unexpected message received from " + msg.getSender().getLocalName());
@@ -104,9 +109,13 @@ public class Mediator extends BaseAgent {
 			proposedCode = rand.nextInt(MAX_VOTING_CODE);
 			
 			foundAgents = searchAgentByType(Integer.toString(proposedCode));
-			System.out.println(String.format("I have found %d agents!\n", foundAgents.length));
 		} while ( foundAgents.length > 0 );
 
 		return proposedCode;
+	}
+
+	private void setAns(){
+		ans = rand.nextInt(MIN_VOTING_VALUE, MAX_VOTING_VALUE);
+
 	}
 }

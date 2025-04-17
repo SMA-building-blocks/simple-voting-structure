@@ -10,7 +10,6 @@ import jade.lang.acl.ACLMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
-import java.util.Random;
 
 
 /**
