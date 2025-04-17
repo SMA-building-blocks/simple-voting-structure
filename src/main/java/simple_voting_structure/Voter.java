@@ -1,5 +1,7 @@
 package simple_voting_structure;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import jade.core.AID;
@@ -11,6 +13,9 @@ import jade.lang.acl.MessageTemplate;
 public class Voter extends BaseAgent {
 
 	private static final long serialVersionUID = 1L;
+	
+	private int minVotingValue;
+	private int maxVotingValue;
 
 	@Override
 	protected void setup() {
@@ -47,7 +52,7 @@ public class Voter extends BaseAgent {
 								msg2.addReceiver(foundMediator);
 								
 								send(msg2);
-								logger.log(Level.INFO, getLocalName() + " SENT START MESSAGE  TO " + foundMediator.getLocalName());
+								logger.log(Level.INFO, String.format("%s SENT START MESSAGE TO %s", getLocalName(), foundMediator.getLocalName()));
 							}
 						} catch ( Exception any ) {
 							logger.log(Level.SEVERE, ANSI_RED + "ERROR WHILE SENDING MESSAGE" + ANSI_RESET);
@@ -59,6 +64,31 @@ public class Voter extends BaseAgent {
 							|| EVEN.equalsIgnoreCase(msg.getContent().split(" ")[0])) {
 						logger.log(Level.INFO, myAgent.getLocalName() + " RECEIVED RESULTS MESSAGE FROM " + msg.getSender().getLocalName());
 						logger.log(Level.INFO, myAgent.getLocalName() + " " + msg.getContent());
+					} else if (msg.getContent().startsWith(VOTEID)) {
+						logger.log(Level.INFO, 
+								String.format("RECEIVED VOTING STRUCTURE FROM %s: %s", msg.getSender().getLocalName(), msg.getContent()));
+						
+						String [] splittedMsg = msg.getContent().split(" ");
+						
+						votingCode = Integer.parseInt(splittedMsg[1]);
+						minVotingValue = Integer.parseInt(splittedMsg[3]);
+						maxVotingValue = Integer.parseInt(splittedMsg[5]);
+						
+						registerDF(myAgent, Integer.toString(votingCode), Integer.toString(votingCode));
+						
+						 ArrayList<DFAgentDescription> foundAgents = new ArrayList<DFAgentDescription>(Arrays.asList(searchAgentByType("voter")));
+						
+						ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
+						msg2.setContent(String.format("%s %s", INVITE, msg.getContent()));
+						
+						foundAgents.forEach(ag -> {
+							if ( !ag.getName().equals(myAgent.getAID())  ) {
+								msg2.addReceiver(ag.getName());
+							}
+						});
+						
+						send(msg2);
+						logger.log(Level.INFO, String.format("%s SENT INVITE TO VOTERS!", getLocalName()));
 					} else {
 						logger.log(Level.INFO, 
 								myAgent.getLocalName() + " Unexpected message received from " + msg.getSender().getLocalName());

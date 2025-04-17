@@ -22,6 +22,8 @@ public abstract class BaseAgent extends Agent {
 	public static final String ANSWER = "ANSWER";
 	public static final String THANKS = "THANKS";
 	public static final String START = "START";
+	public static final String VOTEID = "VOTEID";
+	public static final String INVITE = "INVITE";
 	
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLUE = "\u001B[34m";
@@ -35,6 +37,7 @@ public abstract class BaseAgent extends Agent {
 	
 	protected static final Random rand = new Random();
 
+	protected int votingCode;
 	
 	protected static final Logger logger = Logger.getLogger(BaseAgent.class.getName());
 	

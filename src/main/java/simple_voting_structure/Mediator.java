@@ -21,7 +21,6 @@ public class Mediator extends BaseAgent {
 	private int answersCnt = 0;
 	private int inpA;
 	private int inpB;
-	private int votingCode;
 
 	@Override
 	protected void setup() {
@@ -84,10 +83,10 @@ public class Mediator extends BaseAgent {
 						
 						ACLMessage msg2 = msg.createReply();
 
-						msg2.setContent("VOTEID " + votingCode + " MAXVALUE " + MAX_VOTING_VALUE + " MINVALUE " + MIN_VOTING_VALUE);
+						msg2.setContent(String.format("VOTEID %d MINVALUE %d MAXVALUE %d", votingCode, MIN_VOTING_VALUE, MAX_VOTING_VALUE));
 
 						send(msg2);
-						logger.log(Level.INFO, getLocalName() + " SENT VOTING CODE TO " + msg2.getAllReceiver().next());
+						logger.log(Level.INFO, getLocalName() + " SENT VOTING CODE TO " + msg.getSender().getLocalName());
 					
 					} else {
 						logger.log(Level.INFO, 
@@ -116,6 +115,5 @@ public class Mediator extends BaseAgent {
 
 	private void setAns(){
 		ans = rand.nextInt(MIN_VOTING_VALUE, MAX_VOTING_VALUE);
-
 	}
 }
