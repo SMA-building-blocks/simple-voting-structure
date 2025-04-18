@@ -1,88 +1,128 @@
 package simple_voting_structure;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 
+import FIPA.stringsHelper;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 public class Mediator extends BaseAgent {
 
 	private static final long serialVersionUID = 1L;
-
-	private int answersCnt = 0;
-
-	private int inpA, inpB;
+	private static final int MAX_VOTING_CODE = 9999;
+	private static final int MIN_VOTING_VALUE = 1;
+	private static final int MAX_VOTING_VALUE = 100;
+	
+	private int votingAnswer = 0;
+	private int registeredQuorum = 0;
+	private int totalQuorum = 0;
 
 	@Override
 	protected void setup() {
 
 		logger.log(Level.INFO, "I'm the mediator!");
-
-		Object[] args = getArguments();
-		ArrayList<String> votersName = new ArrayList<String>();
-		
-		if (args != null && args.length > 0) {
-			for (Object voter : args) {
-				votersName.add(voter.toString());
-			}
-		}
-		
 		this.registerDF(this, "Mediator", "mediator");
+		
+		addBehaviour(handleMessages());
+	}
+	
+	@Override
+	protected OneShotBehaviour handleInform ( ACLMessage msg ) {
+		OneShotBehaviour handleInform = new OneShotBehaviour(this) {
+			private static final long serialVersionUID = 1L;
 
-		addBehaviour(new CyclicBehaviour(this) {
-			public void action() {
-				// listen if a greetings message arrives
-				ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.INFORM));
-				if (msg != null) {
-					if (ANSWER.equalsIgnoreCase(msg.getContent().split(" ")[0])) {
-						// if an ANSWER to a greetings message is arrived
-						// then send a THANKS message
-						logger.log(Level.INFO, myAgent.getLocalName() + " RECEIVED ANSWER MESSAGE FROM " + msg.getSender().getLocalName());
-						ACLMessage replyT = msg.createReply();
-						replyT.setContent(THANKS);
-						myAgent.send(replyT);
-						logger.log(Level.INFO, myAgent.getLocalName() + " SENT THANKS MESSAGE");
+			public void action () {
+				if (msg.getContent().startsWith(START)) {
+					// send them a message requesting for a number;
+					
+					votingCode = votingCodeGenerator();
+					
+					setAns();
 
-						if (msg.getSender().getLocalName().equals(votersName.get(0))) {
-							inpA = Integer.parseInt(msg.getContent().split(" ")[1]);
-						} else {
-							inpB = Integer.parseInt(msg.getContent().split(" ")[1]);
-						}
+					registerDF(myAgent, Integer.toString(votingCode), Integer.toString(votingCode));
+					
+					registeredQuorum = 0;
 
-						answersCnt++;
-						if (answersCnt == 2) {
-							ACLMessage replyW = new ACLMessage(ACLMessage.INFORM);
+					logger.log(Level.INFO, String.format("%s AGENT GENERATED VOTING WITH CODE %d!", getLocalName(), votingCode));
+					
+					ACLMessage msg2 = msg.createReply();
 
-							replyW.setContent((((inpA + inpB) % 2 != 0) ? ODD + " " + votersName.get(0)
-									: EVEN + " " + votersName.get(1)) + " WINNER!");
-							replyW.addReceiver(new AID(votersName.get(0), AID.ISLOCALNAME));
-							replyW.addReceiver(new AID(votersName.get(1), AID.ISLOCALNAME));
-							myAgent.send(replyW);
+					msg2.setContent(String.format("VOTEID %d MINVALUE %d MAXVALUE %d", votingCode, MIN_VOTING_VALUE, MAX_VOTING_VALUE));
 
-							logger.log(Level.INFO, myAgent.getLocalName() + " SENT WINNER MESSAGE");
-						}
-					} else if (START.equalsIgnoreCase(msg.getContent())) {
-						// send them a message requesting for a number;
-						ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
-						msg2.setContent(REQUEST);
-
-						msg2.addReceiver(new AID(votersName.get(0), AID.ISLOCALNAME));
-						msg2.addReceiver(new AID(votersName.get(1), AID.ISLOCALNAME));
-
-						send(msg2);
-						logger.log(Level.INFO, getLocalName() + " SENT REQUEST MESSAGE  TO " + votersName.get(0) + " AND " + votersName.get(1));
-					} else {
-						logger.log(Level.INFO, 
-								myAgent.getLocalName() + " Unexpected message received from " + msg.getSender().getLocalName());
+					send(msg2);
+					logger.log(Level.INFO,  String.format("%s SENT VOTING CODE TO %s", getLocalName(), msg.getSender().getLocalName()));
+				} else if ( msg.getContent().startsWith(INFORM) ) {
+					String [] splittedMsg = msg.getContent().split(" ");
+					
+					totalQuorum = Integer.parseInt(splittedMsg[2]);
+					
+					logger.log(Level.INFO, String.format("EXPECTED QUORUM BY %s: %d VOTERS!", getLocalName(), totalQuorum));
+				} else if ( msg.getContent().startsWith(REGISTERED) ) { 
+					++registeredQuorum;
+					
+					if ( registeredQuorum == totalQuorum ) {
+						logger.log(Level.INFO, "TOTAL QUORUM REACHED! REQUESTING VOTES!");
+						
+						requestVotes();
 					}
 				} else {
-					// if no message is arrived, block the behaviour
-					block();
+					logger.log(Level.INFO, 
+							String.format("%s RECEIVED AN UNEXPECTED MESSAGE FROM %s", getLocalName(), msg.getSender().getLocalName()));
 				}
 			}
-		});
+		};
+		
+		return handleInform;
+	}
+	
+	private void requestVotes() {
+		try {
+			ACLMessage requestVoteMsg = new ACLMessage(ACLMessage.REQUEST);
+			requestVoteMsg.setContent(String.format("%s VOTE FOR %d", REQUEST, votingCode));
+			
+			ArrayList<DFAgentDescription> foundVotingParticipants = new ArrayList<>();
+			String [] types = { Integer.toString(votingCode), "voter" };
+			foundVotingParticipants = new ArrayList<DFAgentDescription>(
+					Arrays.asList(searchAgentByType(types)));
+			
+			if ( foundVotingParticipants.size() != registeredQuorum ) {
+				throw new Exception(String.format("FOUND VOTERS DIFFERS FROM REGISTERED QUORUM! (%d x %d)", 
+						foundVotingParticipants.size(), registeredQuorum));
+			}
+			
+			foundVotingParticipants.forEach(ag -> {
+				requestVoteMsg.addReceiver(ag.getName());
+			});
+			
+			send(requestVoteMsg);
+			logger.log(Level.INFO, 
+					String.format("%s REQUESTED A VOTE FOR ALL %d VOTERS!", getLocalName(), foundVotingParticipants.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private int votingCodeGenerator () {
+		int proposedCode;
+		DFAgentDescription [] foundAgents;
+		
+		do {
+			proposedCode = rand.nextInt(MAX_VOTING_CODE);
+			
+			foundAgents = searchAgentByType(Integer.toString(proposedCode));
+		} while ( foundAgents.length > 0 );
+
+		return proposedCode;
+	}
+
+	private void setAns(){
+		votingAnswer = rand.nextInt(MIN_VOTING_VALUE, MAX_VOTING_VALUE + 1);
 	}
 }

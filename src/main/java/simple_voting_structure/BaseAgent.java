@@ -2,12 +2,16 @@ package simple_voting_structure;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+
 import java.util.logging.Logger;
+import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 
@@ -21,6 +25,11 @@ public abstract class BaseAgent extends Agent {
 	public static final String ANSWER = "ANSWER";
 	public static final String THANKS = "THANKS";
 	public static final String START = "START";
+	public static final String VOTEID = "VOTEID";
+	public static final String INVITE = "INVITE";
+	public static final String REGISTERED = "REGISTERED";
+	public static final String INFORM = "INFORM";
+	public static final String VOTE = "VOTE";
 	
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLUE = "\u001B[34m";
@@ -32,23 +41,84 @@ public abstract class BaseAgent extends Agent {
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_WHITE = "\u001B[37m";
 	
+	protected static final Random rand = new Random();
+
+	protected int votingCode;
+	
 	protected static final Logger logger = Logger.getLogger(BaseAgent.class.getName());
 	
 	@Override
 	protected void setup() {}
+	
+	protected CyclicBehaviour handleMessages () {
+		CyclicBehaviour handleMessages = new CyclicBehaviour(this) {
+			private static final long serialVersionUID = 1L;
+
+			public void action() {
+				ACLMessage msg = receive();
+				
+				if ( msg == null ) block();
+				else {
+					switch ( msg.getPerformative() ) {
+					case ACLMessage.INFORM:
+						addBehaviour(handleInform(msg));
+						break;
+					case ACLMessage.REQUEST:
+						addBehaviour(handleRequest(msg));
+						break;
+					default:
+						logger.log(Level.INFO, 
+								String.format("%s RECEIVED UNEXPECTED MESSAGE PERFORMATIVE FROM %s", getLocalName(), msg.getSender().getLocalName()));
+					}
+				}
+			}
+		};
+		
+		return handleMessages;
+	}
+	
+	protected OneShotBehaviour handleInform ( ACLMessage msg ) {
+		OneShotBehaviour handleInform = new OneShotBehaviour(this) {
+			private static final long serialVersionUID = 1L;
+
+			public void action () {}
+		};
+		
+		return handleInform;
+	}
+	
+	protected OneShotBehaviour handleRequest ( ACLMessage msg ) {
+		OneShotBehaviour handleRequest = new OneShotBehaviour(this) {
+			private static final long serialVersionUID = 1L;
+
+			public void action () {}
+		};
+		
+		return handleRequest;
+	}
 	
 	protected void registerDF(Agent regAgent, String sdName, String sdType) {
 		try {
 			DFAgentDescription dfd = new DFAgentDescription();
 			dfd.setName(getAID());
 			
+			
 			ServiceDescription sd = new ServiceDescription();
 			sd.setType(sdType);
 			sd.setName(sdName);
 			
+			
+			DFAgentDescription [] found = DFService.search(this, dfd);
+			
 			dfd.addServices(sd);
 			
-			DFService.register(regAgent, dfd);
+			if ( found.length == 0 ) {
+				DFService.register(regAgent, dfd);
+			} else {
+				found[0].addServices(sd);
+				DFService.modify(regAgent, found[0]);
+			}
+				
 			logger.log(Level.INFO, getLocalName()+" REGISTERED WITH THE DF" );
 		} catch (FIPAException e) {
 			e.printStackTrace();
@@ -79,6 +149,26 @@ public abstract class BaseAgent extends Agent {
 		return foundAgents;
 	}
 	
+	protected DFAgentDescription[] searchAgentByType (String [] type) {
+		DFAgentDescription search = new DFAgentDescription();
+		
+		DFAgentDescription [] foundAgents = null;
+		
+		for ( int i = 0; i < type.length; ++i ) {
+			ServiceDescription sd = new ServiceDescription();
+			sd.setType(type[i]);
+			search.addServices(sd);
+		}
+		
+		try {
+			foundAgents = DFService.search(this, search);
+		} catch ( Exception any ) {
+			any.printStackTrace();
+		}
+		
+		return foundAgents;
+	}
+	
 	protected void takeDown() {
 		// Deregister with the DF
 		try {
@@ -92,10 +182,8 @@ public abstract class BaseAgent extends Agent {
 	
 	protected void loggerSetup() {
 		ConsoleHandler handler = new ConsoleHandler();
-		handler.setFormatter(new Formatter());
+		handler.setFormatter(new LogFormatter());
 		logger.setUseParentHandlers(false);
 		logger.addHandler(handler);
 	}
-	
-
 }

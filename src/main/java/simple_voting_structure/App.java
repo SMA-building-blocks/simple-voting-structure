@@ -10,7 +10,6 @@ import jade.lang.acl.ACLMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
-import java.util.Random;
 
 
 /**
@@ -39,8 +38,6 @@ public class App extends BaseAgent {
 			votersQuorum =  Integer.parseInt(args[0].toString());
 		}
 		
-		Random rand = new Random();
-
 		int votingStarter = rand.nextInt(votersQuorum);
 		
 		logger.log(Level.INFO, "Agent number " + votingStarter + " will request to the mediator!");
