@@ -2,11 +2,14 @@ package simple_voting_structure;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+
 import java.util.logging.Logger;
 import java.util.Random;
 import java.util.logging.ConsoleHandler;
@@ -26,6 +29,7 @@ public abstract class BaseAgent extends Agent {
 	public static final String INVITE = "INVITE";
 	public static final String REGISTERED = "REGISTERED";
 	public static final String INFORM = "INFORM";
+	public static final String VOTE = "VOTE";
 	
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLUE = "\u001B[34m";
@@ -45,6 +49,53 @@ public abstract class BaseAgent extends Agent {
 	
 	@Override
 	protected void setup() {}
+	
+	protected CyclicBehaviour handleMessages () {
+		CyclicBehaviour handleMessages = new CyclicBehaviour(this) {
+			private static final long serialVersionUID = 1L;
+
+			public void action() {
+				ACLMessage msg = receive();
+				
+				if ( msg == null ) block();
+				else {
+					switch ( msg.getPerformative() ) {
+					case ACLMessage.INFORM:
+						addBehaviour(handleInform(msg));
+						break;
+					case ACLMessage.REQUEST:
+						addBehaviour(handleRequest(msg));
+						break;
+					default:
+						logger.log(Level.INFO, 
+								String.format("%s RECEIVED UNEXPECTED MESSAGE PERFORMATIVE FROM %s", getLocalName(), msg.getSender().getLocalName()));
+					}
+				}
+			}
+		};
+		
+		return handleMessages;
+	}
+	
+	protected OneShotBehaviour handleInform ( ACLMessage msg ) {
+		OneShotBehaviour handleInform = new OneShotBehaviour(this) {
+			private static final long serialVersionUID = 1L;
+
+			public void action () {}
+		};
+		
+		return handleInform;
+	}
+	
+	protected OneShotBehaviour handleRequest ( ACLMessage msg ) {
+		OneShotBehaviour handleRequest = new OneShotBehaviour(this) {
+			private static final long serialVersionUID = 1L;
+
+			public void action () {}
+		};
+		
+		return handleRequest;
+	}
 	
 	protected void registerDF(Agent regAgent, String sdName, String sdType) {
 		try {
