@@ -63,7 +63,7 @@ public class App extends BaseAgent {
 		logger.log(Level.INFO, "Agents started...");
 		pauseSystem();
 		
-		// send them a message demanding start;
+		// send them a message demanding start
 		logger.log(Level.INFO, "Starting system!");
 
 		sendMessage(votersName.get(votingStarter), ACLMessage.INFORM, START);

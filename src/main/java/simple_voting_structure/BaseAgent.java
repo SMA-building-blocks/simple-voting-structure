@@ -51,7 +51,7 @@ public abstract class BaseAgent extends Agent {
 	protected void setup() {}
 	
 	protected CyclicBehaviour handleMessages () {
-		CyclicBehaviour handleMessages = new CyclicBehaviour(this) {
+		return new CyclicBehaviour(this) {
 			private static final long serialVersionUID = 1L;
 
 			public void action() {
@@ -73,28 +73,32 @@ public abstract class BaseAgent extends Agent {
 				}
 			}
 		};
-		
-		return handleMessages;
 	}
 	
 	protected OneShotBehaviour handleInform ( ACLMessage msg ) {
-		OneShotBehaviour handleInform = new OneShotBehaviour(this) {
+		return new OneShotBehaviour(this) {
 			private static final long serialVersionUID = 1L;
 
-			public void action () {}
+			public void action () {
+				/*
+				 * TO-DO:
+				 * IMPLEMENT THIS METHOD BEHAVIOUR ON CONCRETE CLASS
+				 * */
+			}
 		};
-		
-		return handleInform;
 	}
 	
-	protected OneShotBehaviour handleRequest ( ACLMessage msg ) {
-		OneShotBehaviour handleRequest = new OneShotBehaviour(this) {
+	protected OneShotBehaviour handleRequest (ACLMessage msg) {
+		return new OneShotBehaviour(this) {
 			private static final long serialVersionUID = 1L;
 
-			public void action () {}
+			public void action () {
+				/*
+				 * TO-DO:
+				 * IMPLEMENT THIS METHOD BEHAVIOUR ON CONCRETE CLASS
+				 * */
+			}
 		};
-		
-		return handleRequest;
 	}
 	
 	protected void registerDF(Agent regAgent, String sdName, String sdType) {

@@ -4,14 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 
-import FIPA.stringsHelper;
-import jade.core.AID;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
-import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 
 public class Mediator extends BaseAgent {
 
@@ -35,7 +30,7 @@ public class Mediator extends BaseAgent {
 	
 	@Override
 	protected OneShotBehaviour handleInform ( ACLMessage msg ) {
-		OneShotBehaviour handleInform = new OneShotBehaviour(this) {
+		return new OneShotBehaviour(this) {
 			private static final long serialVersionUID = 1L;
 
 			public void action () {
@@ -78,8 +73,6 @@ public class Mediator extends BaseAgent {
 				}
 			}
 		};
-		
-		return handleInform;
 	}
 	
 	private void requestVotes() {
