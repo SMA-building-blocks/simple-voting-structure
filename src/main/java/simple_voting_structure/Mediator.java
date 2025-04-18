@@ -1,11 +1,13 @@
 package simple_voting_structure;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import FIPA.stringsHelper;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -22,6 +24,7 @@ public class Mediator extends BaseAgent {
 	private int inpA;
 	private int inpB;
 	private int registeredQuorum = 0;
+	private int totalQuorum = 0;
 
 	@Override
 	protected void setup() {
@@ -89,11 +92,24 @@ public class Mediator extends BaseAgent {
 						msg2.setContent(String.format("VOTEID %d MINVALUE %d MAXVALUE %d", votingCode, MIN_VOTING_VALUE, MAX_VOTING_VALUE));
 
 						send(msg2);
-						logger.log(Level.INFO, getLocalName() + " SENT VOTING CODE TO " + msg.getSender().getLocalName());
-					
+						logger.log(Level.INFO,  String.format("%s SENT VOTING CODE TO %s", getLocalName(), msg.getSender().getLocalName()));
+					} else if ( msg.getContent().startsWith(INFORM) ) {
+						String [] splittedMsg = msg.getContent().split(" ");
+						
+						totalQuorum = Integer.parseInt(splittedMsg[2]);
+						
+						logger.log(Level.INFO, String.format("EXPECTED QUORUM BY %s: %d VOTERS!", getLocalName(), totalQuorum));
+					} else if ( msg.getContent().startsWith(REGISTERED) ) { 
+						++registeredQuorum;
+						
+						if ( registeredQuorum == totalQuorum ) {
+							logger.log(Level.INFO, "TOTAL QUORUM REACHED! REQUESTING VOTES!");
+							
+							requestVotes();
+						}
 					} else {
 						logger.log(Level.INFO, 
-								myAgent.getLocalName() + " Unexpected message received from " + msg.getSender().getLocalName());
+								String.format("%s RECEIVED AN UNEXPECTED MESSAGE FROM %s", getLocalName(), msg.getSender().getLocalName()));
 					}
 				} else {
 					// if no message is arrived, block the behaviour
@@ -101,6 +117,34 @@ public class Mediator extends BaseAgent {
 				}
 			}
 		});
+	}
+	
+	private void requestVotes() {
+		try {
+		
+			ACLMessage requestVoteMsg = new ACLMessage(ACLMessage.REQUEST);
+			requestVoteMsg.setContent(String.format("%s VOTE FOR %d", REQUEST, votingCode));
+			
+			ArrayList<DFAgentDescription> foundVotingParticipants = new ArrayList<>();
+			String [] types = { Integer.toString(votingCode), "voter" };
+			foundVotingParticipants = new ArrayList<DFAgentDescription>(
+					Arrays.asList(searchAgentByType(types)));
+			
+			if ( foundVotingParticipants.size() != registeredQuorum ) {
+				throw new Exception(String.format("FOUND VOTERS DIFFERS FROM REGISTERED QUORUM! (%d x %d)", 
+						foundVotingParticipants.size(), registeredQuorum));
+			}
+			
+			foundVotingParticipants.forEach(ag -> {
+				requestVoteMsg.addReceiver(ag.getName());
+			});
+			
+			send(requestVoteMsg);
+			logger.log(Level.INFO, 
+					String.format("%s REQUESTED A VOTE FOR ALL %d VOTERS!", getLocalName(), foundVotingParticipants.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private int votingCodeGenerator () {

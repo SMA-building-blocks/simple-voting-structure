@@ -25,6 +25,7 @@ public abstract class BaseAgent extends Agent {
 	public static final String VOTEID = "VOTEID";
 	public static final String INVITE = "INVITE";
 	public static final String REGISTERED = "REGISTERED";
+	public static final String INFORM = "INFORM";
 	
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLUE = "\u001B[34m";
