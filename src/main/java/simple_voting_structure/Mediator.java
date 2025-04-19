@@ -10,7 +10,6 @@ import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
-import jade.util.leap.Map;
 
 public class Mediator extends BaseAgent {
 
@@ -82,7 +81,10 @@ public class Mediator extends BaseAgent {
 					votingLog.put(msg.getSender(), voteValue);
 					logger.log(Level.INFO, String.format("%s RECEIVED VOTE FROM %s!", getLocalName(), msg.getSender().getLocalName()));
 					
-					if ( votingLog.size() == registeredQuorum ) computeResults();
+					if ( votingLog.size() == registeredQuorum ){
+						computeResults();
+						informWinner();
+					}
 				} else {
 					logger.log(Level.INFO, 
 							String.format("%s RECEIVED AN UNEXPECTED MESSAGE FROM %s", getLocalName(), msg.getSender().getLocalName()));
@@ -91,7 +93,31 @@ public class Mediator extends BaseAgent {
 		};
 	}
 	
-	void computeResults() {
+	private void informWinner(){
+		ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
+		
+		ArrayList<DFAgentDescription> foundVotingParticipants = new ArrayList<>();
+		String [] types = { Integer.toString(votingCode), "voter" };
+		foundVotingParticipants = new ArrayList<DFAgentDescription>(
+			Arrays.asList(searchAgentByType(types)));
+			
+		foundVotingParticipants.forEach(ag -> {
+			informMsg.addReceiver(ag.getName());
+		});
+
+		String winnersName = new String();
+		
+		for (int i =0; i<winners.size(); i++){
+			winnersName += String.format("%s (%d) ", winners.get(i).getName(), votingLog.get(winners.get(i))) ;
+		}
+
+		informMsg.setContent(String.format("%s TOTAL-WINNERS %d RIGHT-ANSWER %d VOTING-CODE %d: %s", WINNER, winners.size(), votingAnswer, votingCode, winnersName));
+		
+		send(informMsg);
+		logger.log(Level.INFO, String.format("%s INFORMED WINNERS", getLocalName()));
+	}
+
+	private void computeResults() {
 		int voteDist = 0;
 		int minVoteDist = Integer.MAX_VALUE;
 		
@@ -108,9 +134,6 @@ public class Mediator extends BaseAgent {
 				winners.add(currAg);
 			}
 		}
-		
-		System.out.println("Here are the winners: " + winners);
-		System.out.println(String.format("CORRECT NUMBER %d\nWINNER VOTE VALUE: %d", votingAnswer, votingLog.get(winners.get(0))));
 	}
 	
 	private int calcVoteDistance(int vote) {
