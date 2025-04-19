@@ -34,6 +34,7 @@ public abstract class BaseAgent extends Agent {
 	public static final String VOTE = "VOTE";
 	public static final String WINNER = "WINNER";
 	public static final String DRAW = "DRAW";
+	public static final String UNEXPECTED_MSG = "RECEIVED UNEXPECTED MESSAGE FROM";
 
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLUE = "\u001B[34m";
