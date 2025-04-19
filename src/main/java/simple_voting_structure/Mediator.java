@@ -14,6 +14,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAAgentManagement.UnexpectedArgumentCount;
 import jade.lang.acl.ACLMessage;
 
 public class Mediator extends BaseAgent {
@@ -46,7 +47,7 @@ public class Mediator extends BaseAgent {
 
 			public void action () {
 				if (msg.getContent().startsWith(START)) {
-					// send them a message requesting for a number;
+					// send them a message requesting for a number
 					
 					votingCode = votingCodeGenerator();
 					
@@ -104,20 +105,23 @@ public class Mediator extends BaseAgent {
 	private void informWinner(){
 		ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
 		
-		ArrayList<DFAgentDescription> foundVotingParticipants = new ArrayList<>();
+		ArrayList<DFAgentDescription> foundVotingParticipants;
+
 		String [] types = { Integer.toString(votingCode), "voter" };
-		foundVotingParticipants = new ArrayList<DFAgentDescription>(
+
+		foundVotingParticipants = new ArrayList<>(
 			Arrays.asList(searchAgentByType(types)));
 			
-		foundVotingParticipants.forEach(ag -> {
-			informMsg.addReceiver(ag.getName());
-		});
+		foundVotingParticipants.forEach(ag -> 
+			informMsg.addReceiver(ag.getName()));
 
-		String winnersName = new String();
-		
+		StringBuilder bld = new StringBuilder();
+			
 		for (int i =0; i<winners.size(); i++){
-			winnersName += String.format("%s VOTED: %d ", winners.get(i).getName(), votingLog.get(winners.get(i)));
+			bld.append(String.format("%s VOTED: %d ", winners.get(i).getName(), votingLog.get(winners.get(i))));
 		}
+			
+		String winnersName = bld.toString();
 		String content = String.format("%s TOTAL-WINNERS %d RIGHT-ANSWER %d VOTING-CODE %d: %s", (winners.size()>1? DRAW: WINNER), winners.size(), votingAnswer, votingCode, winnersName);
 		informMsg.setContent(content);
 
@@ -189,24 +193,26 @@ public class Mediator extends BaseAgent {
 			ACLMessage requestVoteMsg = new ACLMessage(ACLMessage.REQUEST);
 			requestVoteMsg.setContent(String.format("%s VOTE FOR %d", REQUEST, votingCode));
 			
-			ArrayList<DFAgentDescription> foundVotingParticipants = new ArrayList<>();
+			ArrayList<DFAgentDescription> foundVotingParticipants;
+
 			String [] types = { Integer.toString(votingCode), "voter" };
-			foundVotingParticipants = new ArrayList<DFAgentDescription>(
+
+			foundVotingParticipants = new ArrayList<>(
 					Arrays.asList(searchAgentByType(types)));
 			
 			if ( foundVotingParticipants.size() != registeredQuorum ) {
-				throw new Exception(String.format("FOUND VOTERS DIFFERS FROM REGISTERED QUORUM! (%d x %d)", 
-						foundVotingParticipants.size(), registeredQuorum));
+				throw new UnexpectedArgumentCount();
 			}
 			
-			foundVotingParticipants.forEach(ag -> {
-				requestVoteMsg.addReceiver(ag.getName());
-			});
+			foundVotingParticipants.forEach(ag -> 
+				requestVoteMsg.addReceiver(ag.getName())
+			);
 			
 			send(requestVoteMsg);
 			logger.log(Level.INFO, 
 					String.format("%s REQUESTED A VOTE FOR ALL %d VOTERS!", getLocalName(), foundVotingParticipants.size()));
 		} catch (Exception e) {
+			logger.log(Level.SEVERE, String.format("%s FOUND VOTERS DIFFERS FROM REGISTERED QUORUM! %s", ANSI_RED, ANSI_RESET));
 			e.printStackTrace();
 		}
 	}
