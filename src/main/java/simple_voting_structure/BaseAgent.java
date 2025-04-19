@@ -33,7 +33,8 @@ public abstract class BaseAgent extends Agent {
 	public static final String INFORM = "INFORM";
 	public static final String VOTE = "VOTE";
 	public static final String WINNER = "WINNER";
-	
+	public static final String DRAW = "DRAW";
+
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLUE = "\u001B[34m";
 	public static final String ANSI_BLACK = "\u001B[30m";
