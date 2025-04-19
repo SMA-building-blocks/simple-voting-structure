@@ -1,8 +1,9 @@
 QUORUM ?= 3
+DF_MAX_RESULT := $(shell expr $(QUORUM) + 5)
 PATH_PROJECT_JAR = target/simple_voting_structure-0.0.1-SNAPSHOT.jar
 PROJECT_GROUP    = simple_voting_structure
 JADE_AGENTS      = simple_voting_structure:$(PROJECT_GROUP).App($(QUORUM));
-JADE_FLAGS 		 = -gui -agents "$(JADE_AGENTS)"
+JADE_FLAGS 		 = -gui -jade_domain_df_maxresult $(DF_MAX_RESULT) -agents "$(JADE_AGENTS)"
 
 .PHONY:
 	clean

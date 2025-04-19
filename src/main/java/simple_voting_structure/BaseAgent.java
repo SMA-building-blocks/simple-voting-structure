@@ -7,10 +7,12 @@ import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
 import java.util.logging.Logger;
+
 import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -30,7 +32,9 @@ public abstract class BaseAgent extends Agent {
 	public static final String REGISTERED = "REGISTERED";
 	public static final String INFORM = "INFORM";
 	public static final String VOTE = "VOTE";
-	
+	public static final String WINNER = "WINNER";
+	public static final String DRAW = "DRAW";
+
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLUE = "\u001B[34m";
 	public static final String ANSI_BLACK = "\u001B[30m";
@@ -137,6 +141,8 @@ public abstract class BaseAgent extends Agent {
 	}
 	
 	protected DFAgentDescription[] searchAgentByType (String type) {
+		SearchConstraints sc = new SearchConstraints();
+		sc.setMaxResults(-1L);
 		DFAgentDescription search = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
 		DFAgentDescription [] foundAgents = null;
@@ -145,7 +151,7 @@ public abstract class BaseAgent extends Agent {
 		search.addServices(sd);
 		
 		try {
-			foundAgents = DFService.search(this, search);
+			foundAgents = DFService.search(this, search, sc);
 		} catch ( Exception any ) {
 			any.printStackTrace();
 		}
@@ -154,6 +160,8 @@ public abstract class BaseAgent extends Agent {
 	}
 	
 	protected DFAgentDescription[] searchAgentByType (String [] type) {
+		SearchConstraints sc = new SearchConstraints();
+		sc.setMaxResults(-1L);
 		DFAgentDescription search = new DFAgentDescription();
 		
 		DFAgentDescription [] foundAgents = null;
@@ -165,7 +173,7 @@ public abstract class BaseAgent extends Agent {
 		}
 		
 		try {
-			foundAgents = DFService.search(this, search);
+			foundAgents = DFService.search(this, search, sc);
 		} catch ( Exception any ) {
 			any.printStackTrace();
 		}

@@ -1,5 +1,6 @@
 package simple_voting_structure;
 
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -52,12 +53,6 @@ public class Voter extends BaseAgent {
 						logger.log(Level.SEVERE, ANSI_RED + "ERROR WHILE SENDING MESSAGE" + ANSI_RESET);
 						any.printStackTrace();
 					}
-				} else if (THANKS.equalsIgnoreCase(msg.getContent())) {
-					logger.log(Level.INFO, myAgent.getLocalName() + " RECEIVED THANKS MESSAGE FROM " + msg.getSender().getLocalName());
-				} else if (ODD.equalsIgnoreCase(msg.getContent().split(" ")[0])
-						|| EVEN.equalsIgnoreCase(msg.getContent().split(" ")[0])) {
-					logger.log(Level.INFO, myAgent.getLocalName() + " RECEIVED RESULTS MESSAGE FROM " + msg.getSender().getLocalName());
-					logger.log(Level.INFO, myAgent.getLocalName() + " " + msg.getContent());
 				} else if (msg.getContent().startsWith(VOTEID)) {
 					logger.log(Level.INFO, 
 							String.format("RECEIVED VOTING STRUCTURE FROM %s: %s", msg.getSender().getLocalName(), msg.getContent()));
@@ -106,6 +101,17 @@ public class Voter extends BaseAgent {
 					registerDF(myAgent, Integer.toString(votingCode), Integer.toString(votingCode));
 					
 					informVotingRegistration();
+				} else if(msg.getContent().startsWith(WINNER) || msg.getContent().startsWith(DRAW)){ 
+					ACLMessage rpl = msg.createReply();
+
+					rpl.setContent(THANKS);
+					send(rpl);
+
+					minVotingValue = 0;
+					maxVotingValue = 0;
+					myVotingValue = 0;
+					votingCode = 0;
+					
 				} else {
 					logger.log(Level.INFO, 
 							String.format("%s RECEIVED UNEXPECTED MESSAGE FROM %s", getLocalName(), msg.getSender().getLocalName()));
