@@ -34,6 +34,7 @@ public abstract class BaseAgent extends Agent {
 	public static final String VOTE = "VOTE";
 	public static final String WINNER = "WINNER";
 	public static final String DRAW = "DRAW";
+	public static final String UNEXPECTED_MSG = "RECEIVED UNEXPECTED MESSAGE FROM";
 
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLUE = "\u001B[34m";
@@ -88,6 +89,7 @@ public abstract class BaseAgent extends Agent {
 				 * TO-DO:
 				 * IMPLEMENT THIS METHOD BEHAVIOUR ON CONCRETE CLASS
 				 * */
+				msg.createReply();
 			}
 		};
 	}
@@ -101,6 +103,7 @@ public abstract class BaseAgent extends Agent {
 				 * TO-DO:
 				 * IMPLEMENT THIS METHOD BEHAVIOUR ON CONCRETE CLASS
 				 * */
+				msg.createReply();
 			}
 		};
 	}
@@ -127,7 +130,7 @@ public abstract class BaseAgent extends Agent {
 				DFService.modify(regAgent, found[0]);
 			}
 				
-			logger.log(Level.INFO, getLocalName()+" REGISTERED WITH THE DF" );
+			logger.log(Level.INFO, String.format("%s REGISTERED WITH THE DF", getLocalName()) );
 		} catch (FIPAException e) {
 			e.printStackTrace();
 		}
@@ -181,11 +184,12 @@ public abstract class BaseAgent extends Agent {
 		return foundAgents;
 	}
 	
+	@Override
 	protected void takeDown() {
 		// Deregister with the DF
 		try {
 			DFService.deregister(this);
-			logger.log(Level.INFO,getLocalName()+" DEREGISTERED WITH THE DF" );
+			logger.log(Level.INFO, String.format("%s DEREGISTERED WITH THE DF",getLocalName()));
 
 		} catch (FIPAException e) {
 			e.printStackTrace();

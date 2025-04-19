@@ -1,6 +1,5 @@
 package simple_voting_structure;
 
-import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -20,7 +19,7 @@ public class Voter extends BaseAgent {
 
 	@Override
 	protected void setup() {
-		logger.log(Level.INFO, "I'm voter: " + this.getLocalName() + "!");
+		logger.log(Level.INFO,String.format("I'm voter: %s", this.getLocalName()));
 		
 		this.registerDF(this, "Voter", "voter");
 
@@ -67,7 +66,7 @@ public class Voter extends BaseAgent {
 					
 					informVotingRegistration();
 					
-					ArrayList<DFAgentDescription> foundAgents = new ArrayList<DFAgentDescription>(
+					ArrayList<DFAgentDescription> foundAgents = new ArrayList<>(
 							Arrays.asList(searchAgentByType("voter")));
 					
 					ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
@@ -79,8 +78,7 @@ public class Voter extends BaseAgent {
 						}
 					});
 					
-					logger.log(Level.INFO, 
-							String.format("%s RECEIVED UNEXPECTED MESSAGE FROM %s", getLocalName(), msg.getSender().getLocalName()));	ACLMessage reply = msg.createReply();
+					ACLMessage reply = msg.createReply();
 					reply.setContent(String.format("%s QUORUM %d", INFORM, foundAgents.size()));
 					myAgent.send(reply);
 					
@@ -114,7 +112,7 @@ public class Voter extends BaseAgent {
 					
 				} else {
 					logger.log(Level.INFO, 
-							String.format("%s RECEIVED UNEXPECTED MESSAGE FROM %s", getLocalName(), msg.getSender().getLocalName()));
+							String.format("%s %s %s", getLocalName(), UNEXPECTED_MSG, msg.getSender().getLocalName()));
 				}
 			}
 		};
@@ -139,7 +137,7 @@ public class Voter extends BaseAgent {
 					logger.log(Level.INFO,  String.format("%s SENT VOTE TO %s", getLocalName(), msg.getSender().getLocalName()));
 				} else {
 					logger.log(Level.INFO, 
-							String.format("%s RECEIVED UNEXPECTED MESSAGE FROM %s", getLocalName(), msg.getSender().getLocalName()));
+							String.format("%s %S %s", getLocalName(), UNEXPECTED_MSG, msg.getSender().getLocalName()));
 				}
 			}
 		};
@@ -149,14 +147,16 @@ public class Voter extends BaseAgent {
 		ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
 		informMsg.setContent(String.format("%s IN %d", REGISTERED, votingCode));
 		
-		ArrayList<DFAgentDescription> foundVotingParticipants = new ArrayList<>();
+		ArrayList<DFAgentDescription> foundVotingParticipants;
+
 		String [] types = { Integer.toString(votingCode), "mediator" };
-		foundVotingParticipants = new ArrayList<DFAgentDescription>(
+		
+		foundVotingParticipants = new ArrayList<>(
 				Arrays.asList(searchAgentByType(types)));
 		
-		foundVotingParticipants.forEach(ag -> {
-			informMsg.addReceiver(ag.getName());
-		});
+		foundVotingParticipants.forEach(ag -> 
+			informMsg.addReceiver(ag.getName())
+		);
 		
 		send(informMsg);
 		logger.log(Level.INFO, String.format("%s INFORMED VOTING REGISTRATION TO MEDIATOR!", getLocalName()));
