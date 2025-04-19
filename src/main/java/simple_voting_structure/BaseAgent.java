@@ -7,6 +7,7 @@ import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
@@ -137,6 +138,8 @@ public abstract class BaseAgent extends Agent {
 	}
 	
 	protected DFAgentDescription[] searchAgentByType (String type) {
+		SearchConstraints sc = new SearchConstraints();
+		sc.setMaxResults(-1L);
 		DFAgentDescription search = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
 		DFAgentDescription [] foundAgents = null;
@@ -145,7 +148,7 @@ public abstract class BaseAgent extends Agent {
 		search.addServices(sd);
 		
 		try {
-			foundAgents = DFService.search(this, search);
+			foundAgents = DFService.search(this, search, sc);
 		} catch ( Exception any ) {
 			any.printStackTrace();
 		}
@@ -154,6 +157,8 @@ public abstract class BaseAgent extends Agent {
 	}
 	
 	protected DFAgentDescription[] searchAgentByType (String [] type) {
+		SearchConstraints sc = new SearchConstraints();
+		sc.setMaxResults(-1L);
 		DFAgentDescription search = new DFAgentDescription();
 		
 		DFAgentDescription [] foundAgents = null;
@@ -165,7 +170,7 @@ public abstract class BaseAgent extends Agent {
 		}
 		
 		try {
-			foundAgents = DFService.search(this, search);
+			foundAgents = DFService.search(this, search, sc);
 		} catch ( Exception any ) {
 			any.printStackTrace();
 		}
