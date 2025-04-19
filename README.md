@@ -24,7 +24,7 @@ O *building block* contido neste repositório tem por objetivo a implementação
 1. **Criação de votação:** mediante solicitação de um agente votante, é esperado que o agente mediador seja capaz de criar uma votação com um código de identificação único no contexto de execução e um intervalo de valores numéricos definido;
 2. **Compartilhamento de votação:** mediante recebimento do código de votação do mediador, é esperado que o agente votante que solicitou a votação compartilhe esse código com os outros agentes votantes, os quais devem se registrar no DF com o devido código para a efetiva participação na votação;
 3. **Solicitação dos votos:** após a visualização no DF dos agentes participantes da votação estabelecida, o agente mediador deve solicitar aos mesmos seus votos;
-Fornecimento dos votos: os agentes votantes devem, mediante requisição do agente, enviar seus votos ao agente mediador, os quais devem ser compostos por
+4. **Fornecimento dos votos:** os agentes votantes devem, mediante requisição do agente, enviar seus votos ao agente mediador, os quais devem ser compostos por
 um número dentro do intervalo proposto;
 5. **Contabilização do resultado:** após o recebimento dos votos de todos os agentes votantes, o agente mediador deve ser capaz de avaliar os votos recebidos e determinar o vencedor da votação ou o empate da mesma;
 6. **Informação do resultado:** após a contabilização do resultado, o agente mediador deve informar a todos os agentes votantes participantes o resultado da votação;
