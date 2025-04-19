@@ -40,7 +40,7 @@ public class App extends BaseAgent {
 		
 		int votingStarter = rand.nextInt(votersQuorum);
 		
-		logger.log(Level.INFO, "Agent number " + votingStarter + " will request to the mediator!");
+		logger.log(Level.INFO, String.format("Agent number %d will request to the mediator!", votingStarter));
 				
 		for ( int i = 0; i < votersQuorum; ++i ) votersName.add("voter_" + i);
 
@@ -50,10 +50,10 @@ public class App extends BaseAgent {
 			
 			votersName.forEach(voter -> {
 				this.launchAgent(voter, "simple_voting_structure.Voter", null);	
-				logger.log(Level.INFO, getLocalName() + " CREATED AND STARTED NEW VOTER: " + voter + " ON CONTAINER " + container.getName());
+				logger.log(Level.INFO, String.format("%s CREATED AND STARTED NEW VOTER: %s ON CONTAINER %s", getLocalName(), voter, container.getName()));
 			});
 		} catch (Exception any) {
-			logger.log(Level.SEVERE, ANSI_RED + "ERROR WHILE CREATING AGENTS" + ANSI_RESET);
+			logger.log(Level.SEVERE, String.format("%s ERROR WHILE CREATING AGENTS %s", ANSI_RED , ANSI_RESET));
 			any.printStackTrace();
 		}
 		
@@ -67,17 +67,17 @@ public class App extends BaseAgent {
 		logger.log(Level.INFO, "Starting system!");
 
 		sendMessage(votersName.get(votingStarter), ACLMessage.INFORM, START);
-		logger.log(Level.INFO, getLocalName() + " SENT START MESSAGE  TO " + votersName.get(votingStarter));
+		logger.log(Level.INFO,String.format("%s SENT START MESSAGE  TO %s", getLocalName(), votersName.get(votingStarter)));
 	}
 	
 
 	private void pauseSystem() {
 		try {
-			logger.log(Level.WARNING, ANSI_YELLOW + "The system is paused -- this action is here only to let you activate the sniffer on the agents, if you want (see documentation)" + ANSI_RESET);
-			logger.log(Level.WARNING, ANSI_YELLOW + "Press enter in the console to start the agents" + ANSI_RESET);
+			logger.log(Level.WARNING, String.format("%s The system is paused -- this action is here only to let you activate the sniffer on the agents, if you want (see documentation) %s", ANSI_YELLOW, ANSI_RESET));
+			logger.log(Level.WARNING, String.format("%s Press enter in the console to start the agents %s", ANSI_YELLOW , ANSI_RESET));
             System.in.read();
         } catch (IOException e) {
-        	logger.log(Level.SEVERE, ANSI_RED + "ERROR STARTING THE SYSTEM" + ANSI_RESET);
+        	logger.log(Level.SEVERE, String.format("%s ERROR STARTING THE SYSTEM %s",ANSI_RED, ANSI_RESET));
             e.printStackTrace();
         }
 	}
@@ -88,7 +88,7 @@ public class App extends BaseAgent {
 			AgentController newAgent = container.createNewAgent(agentName, className, args);
 			newAgent.start();
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, ANSI_RED + "ERROR WHILE LAUNCHING AGENTS" + ANSI_RESET);
+			logger.log(Level.SEVERE, String.format("%s ERROR WHILE LAUNCHING AGENTS %s", ANSI_RED , ANSI_RESET));
 			e.printStackTrace();
 		}
 	}
