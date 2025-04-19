@@ -5,12 +5,9 @@ import java.util.Arrays;
 import java.util.logging.Level;
 
 import jade.core.AID;
-import jade.core.Agent;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 
 public class Voter extends BaseAgent {
 
@@ -31,8 +28,7 @@ public class Voter extends BaseAgent {
 	
 	@Override
 	protected OneShotBehaviour handleInform ( ACLMessage msg ) {
-		
-		OneShotBehaviour handleInform = new OneShotBehaviour(this) {
+		return new OneShotBehaviour(this) {
 			private static final long serialVersionUID = 1L;
 
 			public void action () {
@@ -116,13 +112,11 @@ public class Voter extends BaseAgent {
 				}
 			}
 		};
-		
-		return handleInform;
 	}
 	
 	@Override
 	protected OneShotBehaviour handleRequest ( ACLMessage msg ) {
-		OneShotBehaviour handleRequest = new OneShotBehaviour(this) {
+		return new OneShotBehaviour(this) {
 			private static final long serialVersionUID = 1L;
 
 			public void action () {
@@ -143,8 +137,6 @@ public class Voter extends BaseAgent {
 				}
 			}
 		};
-		
-		return handleRequest;
 	}
 
 	private void informVotingRegistration() {

@@ -2,16 +2,15 @@ package simple_voting_structure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.logging.Level;
 
-import FIPA.stringsHelper;
 import jade.core.AID;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
-import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
+import jade.util.leap.Map;
 
 public class Mediator extends BaseAgent {
 
@@ -23,6 +22,9 @@ public class Mediator extends BaseAgent {
 	private int votingAnswer = 0;
 	private int registeredQuorum = 0;
 	private int totalQuorum = 0;
+	
+	private Hashtable<AID, Integer> votingLog;
+	private ArrayList<AID> winners;
 
 	@Override
 	protected void setup() {
@@ -35,7 +37,7 @@ public class Mediator extends BaseAgent {
 	
 	@Override
 	protected OneShotBehaviour handleInform ( ACLMessage msg ) {
-		OneShotBehaviour handleInform = new OneShotBehaviour(this) {
+		return new OneShotBehaviour(this) {
 			private static final long serialVersionUID = 1L;
 
 			public void action () {
@@ -43,6 +45,9 @@ public class Mediator extends BaseAgent {
 					// send them a message requesting for a number;
 					
 					votingCode = votingCodeGenerator();
+					
+					votingLog = new Hashtable<>();
+					winners = new ArrayList<>();
 					
 					setAns();
 
@@ -72,14 +77,44 @@ public class Mediator extends BaseAgent {
 						
 						requestVotes();
 					}
+				} else if ( msg.getContent().startsWith(VOTE) ) {
+					int voteValue = Integer.parseInt(msg.getContent().split(" ")[3]);
+					votingLog.put(msg.getSender(), voteValue);
+					logger.log(Level.INFO, String.format("%s RECEIVED VOTE FROM %s!", getLocalName(), msg.getSender().getLocalName()));
+					
+					if ( votingLog.size() == registeredQuorum ) computeResults();
 				} else {
 					logger.log(Level.INFO, 
 							String.format("%s RECEIVED AN UNEXPECTED MESSAGE FROM %s", getLocalName(), msg.getSender().getLocalName()));
 				}
 			}
 		};
+	}
+	
+	void computeResults() {
+		int voteDist = 0;
+		int minVoteDist = Integer.MAX_VALUE;
 		
-		return handleInform;
+		Enumeration<AID> agents = votingLog.keys();
+		
+		while (agents.hasMoreElements()) {
+			AID currAg = agents.nextElement();
+			voteDist = calcVoteDistance(votingLog.get(currAg));
+			
+			if ( voteDist == minVoteDist ) winners.add(currAg);
+			else if ( voteDist < minVoteDist ) {
+				minVoteDist = voteDist;
+				winners.clear();
+				winners.add(currAg);
+			}
+		}
+		
+		System.out.println("Here are the winners: " + winners);
+		System.out.println(String.format("CORRECT NUMBER %d\nWINNER VOTE VALUE: %d", votingAnswer, votingLog.get(winners.get(0))));
+	}
+	
+	private int calcVoteDistance(int vote) {
+		return Math.abs(votingAnswer - vote);
 	}
 	
 	private void requestVotes() {
