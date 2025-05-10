@@ -70,10 +70,22 @@ make build
 make run
 ```
 
+- É possível alterar a quantidade de agentes participantes ao passar a variável **QUORUM** seguida do número desejado, como pode ser visto abaixo (onde N representa o número desejado de agentes): 
+
+```bash
+make build-and-run QUORUM=N"
+```
+
 - Por fim, para apagar os arquivos derivados da *build* do projeto, execute o seguinte comando:
 
 ```bash
 make clean
+```
+
+- Para ter acesso a uma série de informações úteis para a execução do building block, basta executar o seguinte comando:
+
+```bash
+make help
 ```
 
 ## Fontes e Referências
