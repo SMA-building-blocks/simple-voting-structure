@@ -37,11 +37,31 @@ Os agentes votantes então escolhem um número randômico dentre o intervalo ini
 
 Por fim, o agente mediador informa os vencedores a todos os agentes votantes participantes e se responsabiliza por apagar todas as informações referentes à votação executada, permitindo assim que outras votações sejam requisitadas.
 
-### Projeto em Execução
+## Projeto em Execução
 
-<img src="" alt="Descrição do Print">
+Abaixo, na *Figura 1*, são apresentados os agentes participantes da votação através da visualização fornecida pelo *sniffer*. Nela, é possível ver o agente *creator*, nomeado por "simple_voting_structure", o agente mediador e os agentes votantes.
 
-*Figura 1: Print do Projeto em Execução*
+<img src="assets/figura1.png" alt="Visualização dos Agentes pelo *Sniffer*">
+
+*Figura 1: Visualização dos Agentes pelo *Sniffer**
+
+Já na *Figura 2*, vista abaixo, é possível ver a mensagem de *start* enviada do agente votante escolhido para o agente mediador, solicitando assim o início de uma votação.
+
+<img src="assets/figura2.png" alt="Mensagem de *Start* Solicitando a Realização de uma Votação">
+
+*Figura 2: Mensagem de *Start* Solicitando a Realização de uma Votação*
+
+Em seguida, na *Figura 3*, é possível ver a mensagem retornada do *mediator* para o agente votante com os dados respectivos à votação a ser realizada (i.e., o código identificador da votação e os limiares inferiores e superiores da votação).
+
+<img src="assets/figura3.png" alt="Mensagem com as Informações da Votação">
+
+*Figura 3: Mensagem com as Informações da Votação*
+
+Por fim, é apresentado na *Figura 4* a mensagem contendo o voto de um dos agentes participantes da votação, enviado ao agente *mediator*.
+
+<img src="assets/figura4.png" alt="Mensagem com o Voto Enviado ao Mediador">
+
+*Figura 4: Mensagem com o Voto Enviado ao Mediador*
 
 ## Requisitos Técnicos
 
