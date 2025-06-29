@@ -9,15 +9,39 @@
 
 *Tabela 1: Identificação dos Autores*
 
+## Métricas do *Building Block*
+
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=tcc-sma-andre-gabriel_simple-voting-structure&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=tcc-sma-andre-gabriel_simple-voting-structure)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=tcc-sma-andre-gabriel_simple-voting-structure&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=tcc-sma-andre-gabriel_simple-voting-structure)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=tcc-sma-andre-gabriel_simple-voting-structure&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=tcc-sma-andre-gabriel_simple-voting-structure)
+
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=tcc-sma-andre-gabriel_simple-voting-structure&metric=bugs)](https://sonarcloud.io/summary/new_code?id=tcc-sma-andre-gabriel_simple-voting-structure)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=tcc-sma-andre-gabriel_simple-voting-structure&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=tcc-sma-andre-gabriel_simple-voting-structure)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=tcc-sma-andre-gabriel_simple-voting-structure&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=tcc-sma-andre-gabriel_simple-voting-structure)
+
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-dark.svg)](https://sonarcloud.io/summary/new_code?id=tcc-sma-andre-gabriel_simple-voting-structure)
+
 ## Descrição
 
 O *building block* contido neste repositório tem por objetivo a implementação de uma Estrutura de Votação Simples, onde é proposto que o agente mediador escolha um valor numérico inteiro dado um intervalo pré-definido e que os agentes votantes busquem, dentro deste intervalo, escolher um número. O agente votante cuja escolha numérica mais se aproximar do valor definido pelo mediador é estabelecido como o vencedor. Há também a possibilidade de empate.
 
-<!-- ### Projeto em Execução
+Inicialmente, o agente *creator* instancia todo o cenário para a execução das atividades do *building block*, criando os agentes votantes e o mediador das possíveis votações, para além de enviar uma mensagem de *start* para um agente votante escolhido randomicamente, a qual desencadeará toda a votação que será realizada.
+
+O agente votante, tendo recebido uma mensagem de *start* por parte do agente *creator*, envia ao mediador uma mensagem solicitando a realização de uma votação, a qual é respondida pelo mesmo com um código identificador da votação a ser realizada e os valores mínimo e máximo para a eventual escolha dos votos.
+
+O agente votante que solicitou a eleição, tendo recebido as informações iniciais da mesma pelo agente mediator, envia aos demais agentes votantes um convite para a mesma. Todos os agentes participantes da votação se registram nas páginas amarelas (i.e., no *DF*) com o código recebido, possibilitando assim a identificação de todos os participantes da mesma. O agente votante também se responsabiliza por informar ao mediador o quórum de agentes votantes convidados para a eleição.
+
+Uma vez que todos os agentes votantes tenham se registrado na votação e informado o mesmo ao agente mediador o mesmo, este então solicita os votos a todos os participantes.
+
+Os agentes votantes então escolhem um número randômico dentre o intervalo inicialmente fornecido e o enviam ao mediador. O agente votante que escolher o número mais próximo ao inicialmente escolhido pelo mediador é declarado o vencedor da votação. Há também a possibilidade de empate.
+
+Por fim, o agente mediador informa os vencedores a todos os agentes votantes participantes e se responsabiliza por apagar todas as informações referentes à votação executada, permitindo assim que outras votações sejam requisitadas.
+
+### Projeto em Execução
 
 <img src="" alt="Descrição do Print">
 
-*Figura 1: Print do Projeto em Execução* -->
+*Figura 1: Print do Projeto em Execução*
 
 ## Requisitos Técnicos
 
@@ -70,7 +94,7 @@ make build
 make run
 ```
 
-- É possível alterar a quantidade de agentes participantes ao passar a variável **QUORUM** seguida do número desejado, como pode ser visto abaixo (onde N representa o número desejado de agentes): 
+- É possível alterar a quantidade de agentes participantes ao passar a variável **QUORUM** seguida do número desejado, como pode ser visto abaixo (onde N representa o número desejado de agentes):
 
 ```bash
 make build-and-run QUORUM=N"
