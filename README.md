@@ -39,7 +39,7 @@ Por fim, o agente mediador informa os vencedores a todos os agentes votantes par
 
 ## Projeto em Execução
 
-Abaixo, na *Figura 1*, são apresentados os agentes participantes da votação através da visualização fornecida pelo *sniffer*. Nela, é possível ver o agente *creator*, nomeado por "simple_voting_structure", o agente mediador e os agentes votantes.
+Abaixo, na *Figura 1*, são apresentados os agentes participantes da votação através da visualização fornecida pelo *sniffer*. Nela, é possível ver o agente *creator*, o agente mediador e os agentes votantes.
 
 <img src="assets/figura1.png" alt="Visualização dos Agentes pelo *Sniffer*">
 
