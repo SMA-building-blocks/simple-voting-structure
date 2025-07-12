@@ -37,31 +37,45 @@ Os agentes votantes então escolhem um número randômico dentre o intervalo ini
 
 Por fim, o agente mediador informa os vencedores a todos os agentes votantes participantes e se responsabiliza por apagar todas as informações referentes à votação executada, permitindo assim que outras votações sejam requisitadas.
 
+## Diagramação
+
+Abaixo, é apresentado o Diagrama de Classes que visa representar a estrutura e organização das classes que compõem o sistema, para além das relações entre estas.
+
+<img src="assets/diagrama_de_classes.png" alt="Diagrama de Classes">
+
+*Figura 1: Diagrama de Classes da Aplicação*
+
+Já abaixo, é apresentado o Diagrama de Sequências, o qual busca apresentar os fluxos de interação e algumas de suas nuances entre todas as classes (instanciadas enquanto agentes) da aplicação desenvolvida.
+
+<img src="assets/diagrama_de_sequencias.png" alt="Diagrama de Sequências">
+
+*Figura 2: Diagrama de Sequências da Aplicação*
+
 ## Projeto em Execução
 
-Abaixo, na *Figura 1*, são apresentados os agentes participantes da votação através da visualização fornecida pelo *sniffer*. Nela, é possível ver o agente *creator*, o agente mediador e os agentes votantes.
+Abaixo, na *Figura 3*, são apresentados os agentes participantes da votação através da visualização fornecida pelo *sniffer*. Nela, é possível ver o agente *creator*, o agente mediador e os agentes votantes.
 
 <img src="assets/figura1.png" alt="Visualização dos Agentes pelo *Sniffer*">
 
-*Figura 1: Visualização dos Agentes pelo *Sniffer**
+*Figura 3: Visualização dos Agentes pelo *Sniffer**
 
-Já na *Figura 2*, vista abaixo, é possível ver a mensagem de *start* enviada do agente votante escolhido para o agente mediador, solicitando assim o início de uma votação.
+Já na *Figura 4*, vista abaixo, é possível ver a mensagem de *start* enviada do agente votante escolhido para o agente mediador, solicitando assim o início de uma votação.
 
 <img src="assets/figura2.png" alt="Mensagem de *Start* Solicitando a Realização de uma Votação">
 
-*Figura 2: Mensagem de *Start* Solicitando a Realização de uma Votação*
+*Figura 4: Mensagem de *Start* Solicitando a Realização de uma Votação*
 
-Em seguida, na *Figura 3*, é possível ver a mensagem retornada do *mediator* para o agente votante com os dados respectivos à votação a ser realizada (i.e., o código identificador da votação e os limiares inferiores e superiores da votação).
+Em seguida, na *Figura 5*, é possível ver a mensagem retornada do *mediator* para o agente votante com os dados respectivos à votação a ser realizada (i.e., o código identificador da votação e os limiares inferiores e superiores da votação).
 
 <img src="assets/figura3.png" alt="Mensagem com as Informações da Votação">
 
-*Figura 3: Mensagem com as Informações da Votação*
+*Figura 5: Mensagem com as Informações da Votação*
 
-Por fim, é apresentado na *Figura 4* a mensagem contendo o voto de um dos agentes participantes da votação, enviado ao agente *mediator*.
+Por fim, é apresentado na *Figura 6* a mensagem contendo o voto de um dos agentes participantes da votação, enviado ao agente *mediator*.
 
 <img src="assets/figura4.png" alt="Mensagem com o Voto Enviado ao Mediador">
 
-*Figura 4: Mensagem com o Voto Enviado ao Mediador*
+*Figura 6: Mensagem com o Voto Enviado ao Mediador*
 
 ## Requisitos Técnicos
 
